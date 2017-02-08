@@ -31,6 +31,16 @@ char* User::getUsername()
 	return this->username;
 }
 
+void User::setPassword(char password[20])
+{
+	strcpy_s(this->password, 20, password);
+}
+
+char * User::getPassword()
+{
+	return this->password;
+}
+
 
 void User::setFirstName(char firstName[20])
 {
