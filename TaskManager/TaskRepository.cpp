@@ -19,6 +19,14 @@ TaskRepository::~TaskRepository()
 {
 }
 
+time_t TaskRepository::charToTime(char charArray[200])
+{
+	istringstream ss(charArray);
+	time_t result;
+	ss >> result;
+	return result;
+}
+
 int TaskRepository::getNextId()
 {
 	int nextId = 0;
@@ -55,14 +63,6 @@ int TaskRepository::getNextId()
 	}
 
 	return -1;
-}
-
-time_t TaskRepository::charToTime(char charArray[200])
-{
-	istringstream ss(charArray);
-	time_t result;
-	ss >> result;
-	return result;
 }
 
 void TaskRepository::Add(Task * task)

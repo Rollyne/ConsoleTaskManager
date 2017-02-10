@@ -20,5 +20,6 @@ enum AdminMenuItems
 enum TaskManagementMenuItems
 {
 	CommentManagement,
-	TimeReportManagement
+	TimeReportManagement,
+	TaskManagementExit
 };

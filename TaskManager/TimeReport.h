@@ -6,7 +6,8 @@ private:
 	int taskId;
 	int reporterId;
 	int hours;
-	time_t timeOfReport;
+	time_t rawTimeOfReport;
+	char timeOfReport[80];
 public:
 	TimeReport();
 	~TimeReport();

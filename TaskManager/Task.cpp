@@ -82,7 +82,7 @@ void Task::setTimeOfCreation(time_t time)
 	localtime_s(&timeinfo, &time);
 
 	char timeOfCreation[80];
-	strftime(timeOfCreation, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
+	strftime(timeOfCreation, 80, "%d/%m/%Y %I:%M:%S %p", &timeinfo);
 	strcpy_s(this->timeOfCreation, timeOfCreation);
 }
 

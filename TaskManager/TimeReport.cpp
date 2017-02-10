@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <ctime>
+#include <string>
 
 #include "TimeReport.h"
 
@@ -55,20 +56,22 @@ int TimeReport::getHoursSpent()
 
 void TimeReport::setTimeOfReport(time_t time)
 {
-	this->timeOfReport = time;
+	this->rawTimeOfReport = time;
+
+	struct tm timeinfo;
+	localtime_s(&timeinfo, &time);
+
+	char timeOfCreation[80];
+	strftime(timeOfCreation, 80, "%d/%m/%Y %I:%M:%S %p", &timeinfo);
+	strcpy_s(this->timeOfReport, timeOfCreation);
 }
 
 time_t TimeReport::getRawTimeOfReport()
 {
-	return this->timeOfReport;
+	return this->rawTimeOfReport;
 }
 
 char * TimeReport::getTimeOfReport()
 {
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &this->timeOfReport);
-
-	char result[80];
-	strftime(result, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
-	return result;
+	return this->timeOfReport;
 }

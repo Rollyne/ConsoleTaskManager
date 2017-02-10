@@ -13,9 +13,11 @@ private:
 	void View();
 	void Edit();
 	void Delete();
+	void UpdateStatus();
 
 	int loggedUserId;
 	CRUDMenuItems RenderMenu();
+	TaskManagementMenuItems RenderTaskMenu(Task* task);
 public:
 	TaskManagementView();
 	~TaskManagementView();

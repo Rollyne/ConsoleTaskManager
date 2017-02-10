@@ -5,6 +5,7 @@
 #include "AuthenticationService.h"
 #include "TaskRepository.h"
 #include "CommentManagementView.h"
+#include "TimeReportManagementView.h"
 
 
 using namespace std;
@@ -18,6 +19,7 @@ TaskManagementView::TaskManagementView()
 TaskManagementView::~TaskManagementView()
 {
 }
+
 
 CRUDMenuItems TaskManagementView::RenderMenu()
 {
@@ -50,6 +52,30 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 		return CRUDMenuItems::Exit;
 	default:
 		return CRUDMenuItems::Invalid;
+	}
+}
+
+TaskManagementMenuItems TaskManagementView::RenderTaskMenu(Task* task)
+{
+	system("cls");
+
+	TaskManagementView::RenderTask(task, this->loggedUserId);
+	cout <<endl<< "## Task Properties ##" << endl
+		<< "[C]omments" << endl
+		<< "[T]ime Report" << endl
+		<< "E[x]it" << endl
+		<< "> ";
+	char buffer[2];
+	cin.getline(buffer, 2);
+
+	switch (toupper(buffer[0]))
+	{
+	case 'C' :
+		return TaskManagementMenuItems::CommentManagement;
+	case 'T':
+		return TaskManagementMenuItems::TimeReportManagement;
+	case 'X':
+		return TaskManagementMenuItems::TaskManagementExit;
 	}
 }
 
@@ -140,10 +166,33 @@ void TaskManagementView::View()
 	{
 		if (target->getCreatorId() == this->loggedUserId || target->getExecutitiveId() == this->loggedUserId)
 		{
-			TaskManagementView::RenderTask(target, this->loggedUserId);
-
-			CommentManagementView* view = new CommentManagementView(target->getId());
-			view->Run();
+			while (true)
+			{
+				TaskManagementMenuItems choice = RenderTaskMenu(target);
+				switch (choice)
+				{
+				case TaskManagementMenuItems::CommentManagement:
+				{
+					CommentManagementView* commView = new CommentManagementView(target->getId());
+					commView->Run();
+					break;
+				}
+				case TaskManagementMenuItems::TimeReportManagement:
+				{
+					TimeReportManagementView* repView = new TimeReportManagementView(target->getId());
+					repView->Run();
+					break;
+				}
+				case TaskManagementMenuItems::TaskManagementExit:
+					return;
+				default: 
+				{
+					cout << "Invalid choice." << endl;
+					system("pause");
+					break;
+				}
+				}
+			}
 		}
 		else
 		{

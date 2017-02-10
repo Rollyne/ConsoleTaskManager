@@ -102,6 +102,9 @@
     <ClInclude Include="TimeReportRepository.h">
       <Filter>Header Files\Repositories</Filter>
     </ClInclude>
+    <ClInclude Include="TimeReportManagementView.h">
+      <Filter>Header Files\Views</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -154,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="TimeReportRepository.cpp">
       <Filter>Source Files\Repositories</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeReportManagementView.cpp">
+      <Filter>Source Files\Views</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

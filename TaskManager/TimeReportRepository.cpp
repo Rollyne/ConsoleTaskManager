@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "string.h"
 #include "fstream"
+#include <sstream>
 
 #include "TimeReportRepository.h"
 
@@ -15,6 +16,14 @@ TimeReportRepository::~TimeReportRepository()
 {
 }
 
+time_t TimeReportRepository::charToTime(char charArray[200])
+{
+	istringstream ss(charArray);
+	time_t result;
+	ss >> result;
+	return result;
+}
+
 int TimeReportRepository::getNextId()
 {
 	int nextId = 0;
@@ -26,7 +35,7 @@ int TimeReportRepository::getNextId()
 		TimeReport* current = NULL;
 		while (!in.eof())
 		{
-			char buffer[200];
+			char buffer[80];
 			current = new TimeReport;
 
 			in.getline(buffer, 20);
@@ -34,7 +43,8 @@ int TimeReportRepository::getNextId()
 
 			in.getline(buffer, 20);
 			in.getline(buffer, 20);
-			in.getline(buffer, 200);
+			in.getline(buffer, 20);
+			in.getline(buffer, 20);
 
 			if (current->getId() > nextId)
 			{
@@ -55,9 +65,10 @@ void TimeReportRepository::Add(TimeReport * report)
 	if (out.is_open())
 	{
 		out << this->getNextId() << endl
-			<< comment->getTaskId() << endl
-			<< comment->getAuthorId() << endl
-			<< comment->getBody() << endl;
+			<< report->getTaskId() << endl
+			<< report->getReporterId() << endl
+			<< report->getHoursSpent() << endl
+			<< report->getRawTimeOfReport() << endl;
 
 		out.close();
 		return;
@@ -75,7 +86,7 @@ TimeReport * TimeReportRepository::GetById(int id)
 		TimeReport* current = NULL;
 		while (!in.eof())
 		{
-			char buffer[200];
+			char buffer[80];
 			current = new TimeReport();
 
 			in.getline(buffer, 20);
@@ -85,10 +96,14 @@ TimeReport * TimeReportRepository::GetById(int id)
 			current->setTaskId(atoi(buffer));
 
 			in.getline(buffer, 20);
-			current->setAuthorId(atoi(buffer));
+			current->setRepotrterId(atoi(buffer));
 
-			in.getline(buffer, 200);
-			current->setBody(buffer);
+			in.getline(buffer, 20);
+			current->setHoursSpent(atoi(buffer));
+
+			in.getline(buffer, 80);
+			if(strlen(buffer) > 0)
+				current->setTimeOfReport(charToTime(buffer));
 
 			if (!in.eof() && current->getId() == id)
 			{
@@ -110,7 +125,7 @@ LinkedList<TimeReport>* TimeReportRepository::GetAll(int taskId)
 		TimeReport* current = NULL;
 		while (!in.eof())
 		{
-			char buffer[200];
+			char buffer[80];
 			current = new TimeReport;
 
 			in.getline(buffer, 20);
@@ -120,10 +135,14 @@ LinkedList<TimeReport>* TimeReportRepository::GetAll(int taskId)
 			current->setTaskId(atoi(buffer));
 
 			in.getline(buffer, 20);
-			current->setAuthorId(atoi(buffer));
+			current->setRepotrterId(atoi(buffer));
 
-			in.getline(buffer, 200);
-			current->setBody(buffer);
+			in.getline(buffer, 20);
+			current->setHoursSpent(atoi(buffer));
+
+			in.getline(buffer, 80);
+			if (strlen(buffer) > 0)
+				current->setTimeOfReport(charToTime(buffer));
 
 			if (current->getTaskId() == taskId)
 				result->Add(current);
@@ -143,7 +162,7 @@ void TimeReportRepository::Update(TimeReport * report)
 		TimeReport* current = NULL;
 		while (!oldFile.eof())
 		{
-			char buffer[200];
+			char buffer[80];
 			current = new TimeReport();
 
 			oldFile.getline(buffer, 20);
@@ -153,24 +172,30 @@ void TimeReportRepository::Update(TimeReport * report)
 			current->setTaskId(atoi(buffer));
 
 			oldFile.getline(buffer, 20);
-			current->setAuthorId(atoi(buffer));
+			current->setRepotrterId(atoi(buffer));
 
-			oldFile.getline(buffer, 200);
-			current->setBody(buffer);
+			oldFile.getline(buffer, 20);
+			current->setHoursSpent(atoi(buffer));
+
+			oldFile.getline(buffer, 80);
+			if (strlen(buffer) > 0)
+				current->setTimeOfReport(charToTime(buffer));
 
 			if (!oldFile.eof() && current->getId() != report->getId())
 			{
 				newFile << current->getId() << endl
 					<< current->getTaskId() << endl
-					<< current->getAuthorId() << endl
-					<< current->getBody() << endl;
+					<< current->getReporterId() << endl
+					<< current->getHoursSpent() << endl
+					<< current->getRawTimeOfReport() << endl;
 			}
 			else if (!oldFile.eof() && current->getId() == report->getId())
 			{
 				newFile << report->getId() << endl
 					<< report->getTaskId() << endl
-					<< report->getAuthorId() << endl
-					<< report->getBody() << endl;
+					<< report->getReporterId() << endl
+					<< report->getHoursSpent() << endl
+					<< report->getRawTimeOfReport() << endl;
 			}
 		}
 		newFile.close();
@@ -192,7 +217,7 @@ void TimeReportRepository::Delete(TimeReport * report)
 		TimeReport* current = NULL;
 		while (!oldFile.eof())
 		{
-			char buffer[200];
+			char buffer[80];
 			current = new TimeReport();
 
 			oldFile.getline(buffer, 20);
@@ -202,17 +227,22 @@ void TimeReportRepository::Delete(TimeReport * report)
 			current->setTaskId(atoi(buffer));
 
 			oldFile.getline(buffer, 20);
-			current->setAuthorId(atoi(buffer));
+			current->setRepotrterId(atoi(buffer));
 
-			oldFile.getline(buffer, 200);
-			current->setBody(buffer);
+			oldFile.getline(buffer, 20);
+			current->setHoursSpent(atoi(buffer));
+
+			oldFile.getline(buffer, 80);
+			if (strlen(buffer) > 0)
+				current->setTimeOfReport(charToTime(buffer));
 
 			if (!oldFile.eof() && current->getId() != report->getId())
 			{
 				newFile << current->getId() << endl
 					<< current->getTaskId() << endl
-					<< current->getAuthorId() << endl
-					<< current->getBody() << endl;
+					<< current->getReporterId() << endl
+					<< current->getHoursSpent() << endl
+					<< current->getRawTimeOfReport() << endl;
 			}
 		}
 		newFile.close();

@@ -1,3 +1,5 @@
-﻿  TimeReportRepository.cpp
+﻿  TimeReport.cpp
+  Task.cpp
+  Generating Code...
   TaskManager.vcxproj -> C:\Users\princ\onedrive\documents\visual studio 2015\Projects\TaskManager\Debug\TaskManager.exe
   TaskManager.vcxproj -> C:\Users\princ\onedrive\documents\visual studio 2015\Projects\TaskManager\Debug\TaskManager.pdb (Full PDB)
