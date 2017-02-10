@@ -8,8 +8,10 @@ private:
 	int measurement;		//time needed
 	int executitiveId;		//id of the person who is going to do the task
 	int creatorId;
-	time_t timeOfCreation;
-	time_t timeOfLastUpdate;
+	char timeOfCreation[80];
+	time_t rawTimeOfCreation;
+	char timeOfLastUpdate[80];
+	time_t rawTimeOfLastUpdate;
 	bool isDone;			//Status of the task - done, or not
 
 public:

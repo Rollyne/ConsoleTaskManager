@@ -145,19 +145,28 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdministrationView.h" />
+    <ClInclude Include="AuthenticationService.h" />
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="CommentRepository.h" />
     <ClInclude Include="MenuItems.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Task.h" />
+    <ClInclude Include="TaskManagementView.h" />
+    <ClInclude Include="TaskRepository.h" />
+    <ClInclude Include="TimeReport.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UserManagementView.h" />
     <ClInclude Include="UserRepository.h" />
     <ClInclude Include="ConsoleValidator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdministrationView.cpp" />
+    <ClCompile Include="AuthenticationService.cpp" />
     <ClCompile Include="Comment.cpp" />
+    <ClCompile Include="CommentRepository.cpp" />
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -166,7 +175,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskManagementView.cpp" />
     <ClCompile Include="TaskManager.cpp" />
+    <ClCompile Include="TaskRepository.cpp" />
+    <ClCompile Include="TimeReport.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="UserManagementView.cpp" />
     <ClCompile Include="UserRepository.cpp" />

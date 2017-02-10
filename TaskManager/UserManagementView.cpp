@@ -3,6 +3,7 @@
 
 #include "UserManagementView.h"
 #include "UserRepository.h"
+#include "User.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ CRUDMenuItems UserManagementView::RenderMenu()
 {
 	system("cls");
 
-	cout << "## User Management ##" << endl
+	cout << "## Users Management ##" << endl
 		<< "[C]reate" << endl
 		<< "[L]ist" << endl
 		<< "[E]dit" << endl

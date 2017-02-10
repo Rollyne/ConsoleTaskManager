@@ -183,7 +183,8 @@ User * UserRepository::GetByUsernameAndPassword(char username[20], char password
 			in.getline(buffer, 20);
 			current->setIsAdmin(atoi(buffer));
 
-			if (!in.eof() && current->getPassword() == password && current->getUsername() == username)
+			if (strcmp(current->getPassword(), password) == 0 &&
+				strcmp(current->getUsername(), username) == 0)
 			{
 				result = current;
 				break;

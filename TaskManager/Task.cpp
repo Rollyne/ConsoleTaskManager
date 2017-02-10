@@ -76,42 +76,46 @@ int Task::getCreatorId()
 
 void Task::setTimeOfCreation(time_t time)
 {
-	this->timeOfCreation = time;
+	this->rawTimeOfCreation = time;
+
+	struct tm timeinfo;
+	localtime_s(&timeinfo, &time);
+
+	char timeOfCreation[80];
+	strftime(timeOfCreation, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
+	strcpy_s(this->timeOfCreation, timeOfCreation);
 }
 
 time_t Task::getRawTimeOfCreation()
 {
-	return this->timeOfCreation;
+	return this->rawTimeOfCreation;
 }
 
 char * Task::getTimeOfCreation()
 {
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &this->timeOfCreation);
-	
-	char result[80];
-	strftime(result, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
-	return result;
+	return this->timeOfCreation;
 }
 
 void Task::setTimeOfLastUpdate(time_t time)
 {
-	this->timeOfLastUpdate = time;
+	this->rawTimeOfLastUpdate = time;
+
+	struct tm timeinfo;
+	localtime_s(&timeinfo, &time);
+
+	char timeOfLastUpdate[80];
+	strftime(timeOfLastUpdate, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
+	strcpy_s(this->timeOfLastUpdate, timeOfLastUpdate);
 }
 
 time_t Task::getRawTimeOfLastUpdate()
 {
-	return time_t();
+	return this->rawTimeOfLastUpdate;
 }
 
 char * Task::getTimeOfLastUpdate()
 {
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &this->timeOfLastUpdate);
-
-	char result[80];
-	strftime(result, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
-	return result;
+	return this->timeOfLastUpdate;
 }
 
 void Task::setStatus(bool isDone)
