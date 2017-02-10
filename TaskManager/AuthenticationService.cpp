@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AuthenticationService.h"
-#include "UserRepository.h"
+#include "CommentRepository.h"
 
 
 AuthenticationService::AuthenticationService()

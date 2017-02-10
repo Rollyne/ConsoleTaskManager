@@ -148,6 +148,7 @@
     <ClInclude Include="AdministrationView.h" />
     <ClInclude Include="AuthenticationService.h" />
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="CommentManagementView.h" />
     <ClInclude Include="CommentRepository.h" />
     <ClInclude Include="MenuItems.h" />
     <ClInclude Include="LinkedList.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="TaskManagementView.h" />
     <ClInclude Include="TaskRepository.h" />
     <ClInclude Include="TimeReport.h" />
+    <ClInclude Include="TimeReportRepository.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UserManagementView.h" />
     <ClInclude Include="UserRepository.h" />
@@ -166,6 +168,7 @@
     <ClCompile Include="AdministrationView.cpp" />
     <ClCompile Include="AuthenticationService.cpp" />
     <ClCompile Include="Comment.cpp" />
+    <ClCompile Include="CommentManagementView.cpp" />
     <ClCompile Include="CommentRepository.cpp" />
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -179,6 +182,7 @@
     <ClCompile Include="TaskManager.cpp" />
     <ClCompile Include="TaskRepository.cpp" />
     <ClCompile Include="TimeReport.cpp" />
+    <ClCompile Include="TimeReportRepository.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="UserManagementView.cpp" />
     <ClCompile Include="UserRepository.cpp" />

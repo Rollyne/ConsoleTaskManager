@@ -1,13 +1,14 @@
 #pragma once
 #include "MenuItems.h"
 #include "ConsoleValidator.h"
+#include "Task.h"
 class TaskManagementView
 {
 private:
 	const int nameMinLength = 3;
 	ConsoleValidator* validate;
 
-	void Create();
+	void Add();
 	void List();
 	void View();
 	void Edit();
@@ -20,5 +21,6 @@ public:
 	~TaskManagementView();
 
 	void Run();
+	static void RenderTask(Task* task, int loggedUserId);
 };
 

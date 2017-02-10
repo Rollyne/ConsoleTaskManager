@@ -21,7 +21,7 @@ CRUDMenuItems UserManagementView::RenderMenu()
 	system("cls");
 
 	cout << "## Users Management ##" << endl
-		<< "[C]reate" << endl
+		<< "[A]dd" << endl
 		<< "[L]ist" << endl
 		<< "[E]dit" << endl
 		<< "[D]elete" << endl
@@ -32,8 +32,8 @@ CRUDMenuItems UserManagementView::RenderMenu()
 
 	switch (toupper(buffer[0]))
 	{
-	case 'C':
-		return CRUDMenuItems::Create;
+	case 'A':
+		return CRUDMenuItems::Add;
 	case 'L':
 		return CRUDMenuItems::List;
 	case 'E':
@@ -48,7 +48,7 @@ CRUDMenuItems UserManagementView::RenderMenu()
 }
 
 
-void UserManagementView::Create()
+void UserManagementView::Add()
 {
 	system("cls");
 
@@ -127,7 +127,7 @@ void UserManagementView::List()
 	system("pause");
 }
 
-void UserManagementView::Update()
+void UserManagementView::Edit()
 {
 	system("cls");
 	
@@ -141,33 +141,48 @@ void UserManagementView::Update()
 	updated->setId(atoi(buffer));
 
 	UserRepository* repo = new UserRepository("users.txt");
+	
 	outdated = repo->GetById(atoi(buffer));
+	if (outdated != NULL) 
+	{
+		cout << "Username |" << outdated->getUsername() << "| : ";
+		cin.getline(buffer, 20);
+		if (!validate->IsMinLength(buffer, nameMinLength))
+			return;
+		updated->setUsername(buffer);
 
-	cout << "Username |" << outdated->getUsername() << "| : ";
-	cin.getline(buffer, 20);
-	updated->setUsername(buffer);
+		cout << "Password |" << outdated->getPassword() << "| : ";
+		cin.getline(buffer, 20);
+		if (!validate->IsMinLength(buffer, nameMinLength))
+			return;
+		updated->setPassword(buffer);
 
-	cout << "Password |" << outdated->getPassword() << "| : ";
-	cin.getline(buffer, 20);
-	updated->setPassword(buffer);
+		cout << "First name |" << outdated->getFirstName() << "| : ";
+		cin.getline(buffer, 20);
+		if (!validate->IsMinLength(buffer, nameMinLength))
+			return;
+		updated->setFirstName(buffer);
 
-	cout << "First name |"<< outdated->getFirstName() << "| : ";
-	cin.getline(buffer, 20);
-	updated->setFirstName(buffer);
+		cout << "Last name |" << outdated->getLastName() << "| : ";
+		cin.getline(buffer, 20);
+		if (!validate->IsMinLength(buffer, nameMinLength))
+			return;
+		updated->setLastName(buffer);
 
-	cout << "Last name |" << outdated->getLastName() << "| : ";
-	cin.getline(buffer, 20);
-	updated->setLastName(buffer);
+		cout.setf(ios::boolalpha);
+		cout << "Is admin |" << outdated->getIsAdmin() << "| (Y/N): ";
+		cin.getline(buffer, 20);
+		if (toupper(buffer[0]) == 'Y')
+			updated->setIsAdmin(true);
+		else
+			updated->setIsAdmin(false);
 
-	cout.setf(ios::boolalpha);
-	cout << "Is admin |"<< outdated->getIsAdmin() <<"| (Y/N): ";
-	cin.getline(buffer, 20);
-	if (toupper(buffer[0]) == 'Y')
-		updated->setIsAdmin(true);
+		repo->Update(updated);
+	}
 	else
-		updated->setIsAdmin(false);
-
-	repo->Update(updated);
+	{
+		cout << "This user doesn't exist." << endl;
+	}
 
 	delete repo;
 	delete updated;
@@ -189,10 +204,16 @@ void UserManagementView::Delete()
 		<< "Index of the user: ";
 	cin.getline(buffer, 20);
 	User* removed = repo->GetById(atoi(buffer));
+	if (removed != NULL)
+	{
+		repo->Delete(removed);
 
-	repo->Delete(removed);
-
-	cout << "User removed."<<endl;
+		cout << "User removed." << endl;
+	}
+	else
+	{
+		cout << "This user doesn't exist" << endl;
+	}
 
 	delete repo;
 	delete removed;
@@ -207,14 +228,14 @@ void UserManagementView::Run()
 		CRUDMenuItems choice = RenderMenu();
 		switch (choice)
 		{
-		case CRUDMenuItems::Create:
-			Create();
+		case CRUDMenuItems::Add:
+			Add();
 			break;
 		case CRUDMenuItems::List:
 			List();
 			break;
 		case CRUDMenuItems::Edit:
-			Update();
+			Edit();
 			break;
 		case CRUDMenuItems::Delete:
 			Delete();

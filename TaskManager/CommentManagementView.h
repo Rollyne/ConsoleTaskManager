@@ -1,11 +1,14 @@
 #pragma once
 #include "MenuItems.h"
 #include "ConsoleValidator.h"
-class UserManagementView
+class CommentManagementView
 {
 private:
 	const int nameMinLength = 3;
 	ConsoleValidator* validate;
+	int loggedUserId;
+
+	int taskId;
 
 	void Add();
 	void List();
@@ -14,8 +17,8 @@ private:
 
 	CRUDMenuItems RenderMenu();
 public:
-	UserManagementView();
-	~UserManagementView();
+	CommentManagementView(int taskId);
+	~CommentManagementView();
 
 	void Run();
 };

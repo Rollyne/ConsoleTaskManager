@@ -96,6 +96,12 @@
     <ClInclude Include="AdministrationView.h">
       <Filter>Header Files\Views</Filter>
     </ClInclude>
+    <ClInclude Include="CommentManagementView.h">
+      <Filter>Header Files\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeReportRepository.h">
+      <Filter>Header Files\Repositories</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -142,6 +148,12 @@
     </ClCompile>
     <ClCompile Include="AdministrationView.cpp">
       <Filter>Source Files\Views</Filter>
+    </ClCompile>
+    <ClCompile Include="CommentManagementView.cpp">
+      <Filter>Source Files\Views</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeReportRepository.cpp">
+      <Filter>Source Files\Repositories</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

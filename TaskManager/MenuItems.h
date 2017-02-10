@@ -1,7 +1,7 @@
 #pragma once
 enum CRUDMenuItems 
 {
-	Create,
+	Add,
 	List,
 	View,
 	Edit,
@@ -16,4 +16,9 @@ enum AdminMenuItems
 	TaskManagement,
 	AdminExit,
 	AdminInvalid
+};
+enum TaskManagementMenuItems
+{
+	CommentManagement,
+	TimeReportManagement
 };

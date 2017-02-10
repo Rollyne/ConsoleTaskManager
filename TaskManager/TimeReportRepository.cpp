@@ -2,20 +2,20 @@
 #include "string.h"
 #include "fstream"
 
-#include "CommentRepository.h"
+#include "TimeReportRepository.h"
 
 using namespace std;
 
-CommentRepository::CommentRepository(char filepath[50])
+TimeReportRepository::TimeReportRepository(char filepath[50])
 {
 	strcpy_s(this->filepath, 50, filepath);
 }
 
-CommentRepository::~CommentRepository()
+TimeReportRepository::~TimeReportRepository()
 {
 }
 
-int CommentRepository::getNextId()
+int TimeReportRepository::getNextId()
 {
 	int nextId = 0;
 
@@ -23,11 +23,11 @@ int CommentRepository::getNextId()
 
 	if (in.is_open())
 	{
-		Comment* current = NULL;
+		TimeReport* current = NULL;
 		while (!in.eof())
 		{
 			char buffer[200];
-			current = new Comment;
+			current = new TimeReport;
 
 			in.getline(buffer, 20);
 			current->setId(atoi(buffer));
@@ -48,7 +48,7 @@ int CommentRepository::getNextId()
 	return -1;
 }
 
-void CommentRepository::Add(Comment * comment)
+void TimeReportRepository::Add(TimeReport * report)
 {
 	ofstream out(this->filepath, ios::app);
 
@@ -65,18 +65,18 @@ void CommentRepository::Add(Comment * comment)
 
 }
 
-Comment * CommentRepository::GetById(int id)
+TimeReport * TimeReportRepository::GetById(int id)
 {
 	ifstream in(this->filepath);
-	Comment* result = NULL;
+	TimeReport* result = NULL;
 
 	if (in.is_open())
 	{
-		Comment* current = NULL;
+		TimeReport* current = NULL;
 		while (!in.eof())
 		{
 			char buffer[200];
-			current = new Comment();
+			current = new TimeReport();
 
 			in.getline(buffer, 20);
 			current->setId(atoi(buffer));
@@ -100,18 +100,18 @@ Comment * CommentRepository::GetById(int id)
 	return result;
 }
 
-LinkedList<Comment>* CommentRepository::GetAll(int taskId)
+LinkedList<TimeReport>* TimeReportRepository::GetAll(int taskId)
 {
-	LinkedList<Comment>* result = new LinkedList<Comment>();
+	LinkedList<TimeReport>* result = new LinkedList<TimeReport>();
 	ifstream in(this->filepath);
 
 	if (in.is_open())
 	{
-		Comment* current = NULL;
+		TimeReport* current = NULL;
 		while (!in.eof())
 		{
 			char buffer[200];
-			current = new Comment;
+			current = new TimeReport;
 
 			in.getline(buffer, 20);
 			current->setId(atoi(buffer));
@@ -125,7 +125,7 @@ LinkedList<Comment>* CommentRepository::GetAll(int taskId)
 			in.getline(buffer, 200);
 			current->setBody(buffer);
 
-			if(current->getTaskId() == taskId)
+			if (current->getTaskId() == taskId)
 				result->Add(current);
 		}
 	}
@@ -133,18 +133,18 @@ LinkedList<Comment>* CommentRepository::GetAll(int taskId)
 	return result;
 }
 
-void CommentRepository::Update(Comment * comment)
+void TimeReportRepository::Update(TimeReport * report)
 {
 	ofstream newFile("temp.txt", ios::app);
 	ifstream oldFile(this->filepath);
 
 	if (oldFile.is_open() && newFile.is_open())
 	{
-		Comment* current = NULL;
+		TimeReport* current = NULL;
 		while (!oldFile.eof())
 		{
 			char buffer[200];
-			current = new Comment();
+			current = new TimeReport();
 
 			oldFile.getline(buffer, 20);
 			current->setId(atoi(buffer));
@@ -158,19 +158,19 @@ void CommentRepository::Update(Comment * comment)
 			oldFile.getline(buffer, 200);
 			current->setBody(buffer);
 
-			if (!oldFile.eof() && current->getId() != comment->getId())
+			if (!oldFile.eof() && current->getId() != report->getId())
 			{
 				newFile << current->getId() << endl
 					<< current->getTaskId() << endl
 					<< current->getAuthorId() << endl
 					<< current->getBody() << endl;
 			}
-			else if (!oldFile.eof() && current->getId() == comment->getId())
+			else if (!oldFile.eof() && current->getId() == report->getId())
 			{
-				newFile << comment->getId() << endl
-					<< comment->getTaskId() << endl
-					<< comment->getAuthorId() << endl
-					<< comment->getBody() << endl;
+				newFile << report->getId() << endl
+					<< report->getTaskId() << endl
+					<< report->getAuthorId() << endl
+					<< report->getBody() << endl;
 			}
 		}
 		newFile.close();
@@ -182,18 +182,18 @@ void CommentRepository::Update(Comment * comment)
 	}
 }
 
-void CommentRepository::Delete(Comment * comment)
+void TimeReportRepository::Delete(TimeReport * report)
 {
 	ofstream newFile("temp.txt", ios::app);
 	ifstream oldFile(this->filepath);
 
 	if (oldFile.is_open() && newFile.is_open())
 	{
-		Comment* current = NULL;
+		TimeReport* current = NULL;
 		while (!oldFile.eof())
 		{
 			char buffer[200];
-			current = new Comment();
+			current = new TimeReport();
 
 			oldFile.getline(buffer, 20);
 			current->setId(atoi(buffer));
@@ -207,7 +207,7 @@ void CommentRepository::Delete(Comment * comment)
 			oldFile.getline(buffer, 200);
 			current->setBody(buffer);
 
-			if (!oldFile.eof() && current->getId() != comment->getId())
+			if (!oldFile.eof() && current->getId() != report->getId())
 			{
 				newFile << current->getId() << endl
 					<< current->getTaskId() << endl

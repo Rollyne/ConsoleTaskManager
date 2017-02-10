@@ -4,6 +4,8 @@
 #include "TaskManagementView.h"
 #include "AuthenticationService.h"
 #include "TaskRepository.h"
+#include "CommentManagementView.h"
+
 
 using namespace std;
 
@@ -22,9 +24,9 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 	system("cls");
 
 	cout << "## Tasks Management ##" << endl
-		<< "[C]reate" << endl
+		<< "[A]dd" << endl
 		<< "[L]ist" << endl
-		//<< "[V]iew" << endl
+		<< "[V]iew" << endl
 		<< "[E]dit" << endl
 		<< "[D]elete" << endl
 		<< "E[x]it" << endl
@@ -34,12 +36,12 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 
 	switch (toupper(buffer[0]))
 	{
-	case 'C':
-		return CRUDMenuItems::Create;
+	case 'A':
+		return CRUDMenuItems::Add;
 	case 'L':
 		return CRUDMenuItems::List;
-	//case 'V':
-		//return CRUDMenuItems::View;
+	case 'V':
+		return CRUDMenuItems::View;
 	case 'E':
 		return CRUDMenuItems::Edit;
 	case 'D':
@@ -52,7 +54,7 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 }
 
 
-void TaskManagementView::Create()
+void TaskManagementView::Add()
 {
 	system("cls");
 
@@ -97,55 +99,66 @@ void TaskManagementView::Create()
 	system("pause");
 }
 
+
+
 void TaskManagementView::List()
 {
 	system("cls");
 
 	TaskRepository* repo = new TaskRepository("tasks.txt");
 	UserRepository* userRepo = new UserRepository("users.txt");
-	LinkedList<Task>* allUsers = repo->GetAll(this->loggedUserId);
+	LinkedList<Task>* allTasks = repo->GetAll(this->loggedUserId);
 
-	int usersCount = allUsers->Count();
+	int usersCount = allTasks->Count();
 
 	cout << "## All tasks that include you ##" << endl << endl;
 	for (int i = 0; i < usersCount; i++)
 	{
-		Task* current = allUsers->getItemAt(i);
-		User* executitive = userRepo->GetById(current->getExecutitiveId());
-		User* creator = userRepo->GetById(current->getCreatorId());
-
-		cout.setf(ios::boolalpha);
-		cout << "# # # # # # # # # # #" << endl
-			<< "Index: " << current->getId() << endl
-			<< "Header: " << current->getHeader() << endl
-			<< "Description: " << current->getDescription() << endl
-			<< "Measurment: ";
-		if (current->getMeasurement() == 1)
-			cout << "1 hour" << endl;
-		else
-			cout << current->getMeasurement() << " hours" << endl;
-
-		cout << "Executitive: " << executitive->getFirstName() << " " << executitive->getLastName()
-			<< "(" << executitive->getId() << ") "
-			<< (executitive->getId() == this->loggedUserId ? "|You|" : "") << endl;
-
-		cout << "Creator: " << creator->getFirstName() << " " << creator->getLastName()
-			<< "(" << creator->getId() << ") "
-			<< (creator->getId() == this->loggedUserId ? "|You|" : "") << endl;
-
-		char* test = current->getTimeOfCreation();
-		cout << test << endl;
-		cout << "Created on: " << current->getTimeOfCreation() << endl
-			<< "Last edited on: " << current->getTimeOfLastUpdate() << endl
-			<< "Status: " << (current->getStatus() ? "Done" : "In process") << endl;
-
+		cout << "# # # # # # # # # # # #" << endl;
+		TaskManagementView::RenderTask(allTasks->getItemAt(i), this->loggedUserId);
 	}
 
 	delete userRepo;
 	delete repo;
-	delete allUsers;
+	delete allTasks;
 
 	system("pause");
+}
+
+void TaskManagementView::View()
+{
+	system("cls");
+
+	cout << "## View task ##" << endl
+		<< "Task index: ";
+	char buffer[20];
+	cin.getline(buffer, 20);
+
+	TaskRepository* repo = new TaskRepository("tasks.txt");
+	Task* target = repo->GetById(atoi(buffer));
+	if (target != NULL)
+	{
+		if (target->getCreatorId() == this->loggedUserId || target->getExecutitiveId() == this->loggedUserId)
+		{
+			TaskManagementView::RenderTask(target, this->loggedUserId);
+
+			CommentManagementView* view = new CommentManagementView(target->getId());
+			view->Run();
+		}
+		else
+		{
+			cout << "You cannot view this task." << endl;
+			system("pause");
+		}
+	}
+	else
+	{
+		cout << "This task doesn't exist." << endl;
+		system("pause");
+	}
+
+	delete repo;
+	delete target;
 }
 
 void TaskManagementView::Edit()
@@ -163,45 +176,55 @@ void TaskManagementView::Edit()
 	
 	TaskRepository* repo = new TaskRepository("tasks.txt");
 	outdated = repo->GetById(atoi(buffer));
+	if (outdated != NULL)
+	{
+		if (this->loggedUserId == outdated->getCreatorId()) {
+			cout << "* Header *" << endl
+				<< outdated->getHeader() << endl
+				<< "> ";
+			cin.getline(buffer, 50);
+			if (!validate->IsMinLength(buffer, nameMinLength))
+				return;
+			updated->setHeader(buffer);
 
-	if (this->loggedUserId == outdated->getCreatorId()) {
-		cout << "* Header *" << endl
-			<< outdated->getHeader() << endl
-			<< "> ";
-		cin.getline(buffer, 50);
-		updated->setHeader(buffer);
+			cout << "* Description *" << endl
+				<< outdated->getDescription() << endl
+				<< "> ";
+			cin.getline(buffer, 200);
+			if (!validate->IsMinLength(buffer, nameMinLength))
+				return;
+			updated->setDescription(buffer);
 
-		cout << "* Description *" << endl
-			<< outdated->getDescription() << endl
-			<< "> ";
-		cin.getline(buffer, 200);
-		updated->setDescription(buffer);
+			cout << "Measurment |" << outdated->getMeasurement() << "| : ";
+			cin.getline(buffer, 20);
+			updated->setMeasurement(atoi(buffer));
 
-		cout << "Measurment |" << outdated->getMeasurement() << "| : ";
-		cin.getline(buffer, 20);
-		updated->setMeasurement(atoi(buffer));
+			cout << "Executitive's index |" << outdated->getExecutitiveId() << "| : ";
+			cin.getline(buffer, 20);
+			updated->setExecutitiveId(atoi(buffer));
 
-		cout << "Executitive's index |" << outdated->getExecutitiveId() << "| : ";
-		cin.getline(buffer, 20);
-		updated->setExecutitiveId(atoi(buffer));
+			cout.setf(ios::boolalpha);
+			cout << "Is it completed |" << outdated->getStatus() << "| (Y/N): ";
+			cin.getline(buffer, 20);
+			if (toupper(buffer[0]) == 'Y')
+				updated->setStatus(true);
+			else
+				updated->setStatus(false);
 
-		cout.setf(ios::boolalpha);
-		cout << "Is it completed |" << outdated->getStatus() << "| (Y/N): ";
-		cin.getline(buffer, 20);
-		if (toupper(buffer[0]) == 'Y')
-			updated->setStatus(true);
+			updated->setCreatorId(outdated->getCreatorId());
+			updated->setTimeOfCreation(outdated->getRawTimeOfCreation());
+			updated->setTimeOfLastUpdate(time(0));
+
+			repo->Update(updated);
+		}
 		else
-			updated->setStatus(false);
-
-		updated->setCreatorId(outdated->getCreatorId());
-		updated->setTimeOfCreation(outdated->getRawTimeOfCreation());
-		updated->setTimeOfLastUpdate(time(0));
-
-		repo->Update(updated);
+		{
+			cout << "You cannot edit this task." << endl;
+		}
 	}
 	else 
 	{
-		cout << "You cannot edit this task." << endl;
+		cout << "This task doesn't exist." << endl;
 	}
 
 	delete repo;
@@ -222,14 +245,21 @@ void TaskManagementView::Delete()
 		<< "Index of the task: ";
 	cin.getline(buffer, 20);
 	Task* removed = repo->GetById(atoi(buffer));
-	if (this->loggedUserId == removed->getCreatorId())
+	if (removed != NULL) 
 	{
-		repo->Delete(removed);
-		cout << "Task removed." << endl;
+		if (this->loggedUserId == removed->getCreatorId())
+		{
+			repo->Delete(removed);
+			cout << "Task removed." << endl;
+		}
+		else
+		{
+			cout << "You cannot delete this task." << endl;
+		}
 	}
-	else 
+	else
 	{
-		cout << "You cannot delete this task." << endl;
+		cout << "This task doesn't exist" << endl;
 	}
 	
 	delete repo;
@@ -245,11 +275,14 @@ void TaskManagementView::Run()
 		CRUDMenuItems choice = RenderMenu();
 		switch (choice)
 		{
-		case CRUDMenuItems::Create:
-			Create();
+		case CRUDMenuItems::Add:
+			Add();
 			break;
 		case CRUDMenuItems::List:
 			List();
+			break;
+		case CRUDMenuItems::View:
+			View();
 			break;
 		case CRUDMenuItems::Edit:
 			Edit();
@@ -265,4 +298,41 @@ void TaskManagementView::Run()
 			break;
 		}
 	}
+}
+
+void TaskManagementView::RenderTask(Task* task, int loggedUserId)
+{
+
+	UserRepository* userRepo = new UserRepository("users.txt");
+
+	User* executitive = userRepo->GetById(task->getExecutitiveId());
+	User* creator = userRepo->GetById(task->getCreatorId());
+
+	cout.setf(ios::boolalpha);
+	cout << "Index: " << task->getId() << endl
+		<< "Header: " << task->getHeader() << endl
+		<< "Description: " << task->getDescription() << endl
+		<< "Measurment: ";
+	if (task->getMeasurement() == 1)
+		cout << "1 hour" << endl;
+	else
+		cout << task->getMeasurement() << " hours" << endl;
+
+	cout << "Executitive: " << executitive->getFirstName() << " " << executitive->getLastName()
+		<< "(" << executitive->getId() << ") "
+		<< (executitive->getId() == loggedUserId ? "|You|" : "") << endl;
+
+	cout << "Creator: " << creator->getFirstName() << " " << creator->getLastName()
+		<< "(" << creator->getId() << ") "
+		<< (creator->getId() == loggedUserId ? "|You|" : "") << endl;
+
+	char* test = task->getTimeOfCreation();
+	cout << test << endl;
+	cout << "Created on: " << task->getTimeOfCreation() << endl
+		<< "Last edited on: " << task->getTimeOfLastUpdate() << endl
+		<< "Status: " << (task->getStatus() ? "Done" : "In process") << endl;
+
+	delete userRepo;
+	delete executitive;
+	delete creator;
 }
