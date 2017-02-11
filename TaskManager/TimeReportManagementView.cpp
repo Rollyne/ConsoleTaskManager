@@ -12,6 +12,7 @@ using namespace std;
 
 TimeReportManagementView::TimeReportManagementView(int taskId)
 {
+	this->validate = new ConsoleValidator();
 	this->taskId = taskId;
 	this->loggedUserId = AuthenticationService::getLoggedUser()->getId();
 }
@@ -124,8 +125,8 @@ void TimeReportManagementView::Edit()
 {
 	system("cls");
 
-	TimeReport* updated = new TimeReport;
-	TimeReport* outdated = new TimeReport;
+	TimeReport* updated = new TimeReport();
+	TimeReport* outdated = new TimeReport();
 	char buffer[20];
 
 	cout << "## Update report ##" << endl

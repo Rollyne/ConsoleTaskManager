@@ -39,7 +39,6 @@ int main()
 		view.Run();
 		return 0;
 	}
-    return 0;
 	
 }
 

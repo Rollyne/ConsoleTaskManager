@@ -12,6 +12,7 @@ using namespace std;
 
 TaskManagementView::TaskManagementView()
 {
+	validate = new ConsoleValidator();
 	this->loggedUserId = AuthenticationService::getLoggedUser()->getId();
 }
 
@@ -30,6 +31,7 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 		<< "[L]ist" << endl
 		<< "[V]iew" << endl
 		<< "[E]dit" << endl
+		<< "[U]pdate status" << endl
 		<< "[D]elete" << endl
 		<< "E[x]it" << endl
 		<< "> ";
@@ -46,6 +48,8 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 		return CRUDMenuItems::View;
 	case 'E':
 		return CRUDMenuItems::Edit;
+	case 'U':
+		return CRUDMenuItems::UpdateStatus;
 	case 'D':
 		return CRUDMenuItems::Delete;
 	case 'X':
@@ -76,7 +80,46 @@ TaskManagementMenuItems TaskManagementView::RenderTaskMenu(Task* task)
 		return TaskManagementMenuItems::TimeReportManagement;
 	case 'X':
 		return TaskManagementMenuItems::TaskManagementExit;
+	default :
+		break;
 	}
+}
+
+void TaskManagementView::RenderTask(Task* task, int loggedUserId)
+{
+
+	UserRepository* userRepo = new UserRepository("users.txt");
+
+	User* executitive = userRepo->GetById(task->getExecutitiveId());
+	User* creator = userRepo->GetById(task->getCreatorId());
+
+	cout.setf(ios::boolalpha);
+	cout << "Index: " << task->getId() << endl
+		<< "Header: " << task->getHeader() << endl
+		<< "Description: " << task->getDescription() << endl
+		<< "Measurment: ";
+	if (task->getMeasurement() == 1)
+		cout << "1 hour" << endl;
+	else
+		cout << task->getMeasurement() << " hours" << endl;
+
+	cout << "Executitive: " << executitive->getFirstName() << " " << executitive->getLastName()
+		<< "(" << executitive->getId() << ") "
+		<< (executitive->getId() == loggedUserId ? "|You|" : "") << endl;
+
+	cout << "Creator: " << creator->getFirstName() << " " << creator->getLastName()
+		<< "(" << creator->getId() << ") "
+		<< (creator->getId() == loggedUserId ? "|You|" : "") << endl;
+
+	char* test = task->getTimeOfCreation();
+	cout << test << endl;
+	cout << "Created on: " << task->getTimeOfCreation() << endl
+		<< "Last edited on: " << task->getTimeOfLastUpdate() << endl
+		<< "Status: " << (task->getStatus() ? "Done" : "In process") << endl;
+
+	delete userRepo;
+	delete executitive;
+	delete creator;
 }
 
 
@@ -252,17 +295,10 @@ void TaskManagementView::Edit()
 			cin.getline(buffer, 20);
 			updated->setExecutitiveId(atoi(buffer));
 
-			cout.setf(ios::boolalpha);
-			cout << "Is it completed |" << outdated->getStatus() << "| (Y/N): ";
-			cin.getline(buffer, 20);
-			if (toupper(buffer[0]) == 'Y')
-				updated->setStatus(true);
-			else
-				updated->setStatus(false);
-
 			updated->setCreatorId(outdated->getCreatorId());
 			updated->setTimeOfCreation(outdated->getRawTimeOfCreation());
 			updated->setTimeOfLastUpdate(time(0));
+			updated->setStatus(outdated->getStatus());
 
 			repo->Update(updated);
 		}
@@ -317,6 +353,71 @@ void TaskManagementView::Delete()
 	system("pause");
 }
 
+void TaskManagementView::UpdateStatus()
+{
+	system("cls");
+	cout << "## Update task's status ##" << endl
+		<< "Task's index: ";
+	char buffer[20];
+	cin.getline(buffer, 20);
+
+	TaskRepository* repo = new TaskRepository("tasks.txt");
+	
+	Task* task = repo->GetById(atoi(buffer));
+	if (task != NULL) {
+		if (task->getCreatorId() == this->loggedUserId)
+		{
+			if (task->getStatus())
+			{
+				cout << "The task is said to be completed, do you want put it in process (Y/N)?" << endl
+					<< "> ";
+				cin.getline(buffer, 20);
+				if (buffer[0] == 'Y')
+				{
+					task->setStatus(false);
+					repo->Update(task);
+					cout << "The task is now in process." << endl;
+				}
+			}
+			else
+			{
+				cout << "The task is said to be in process so you cannot change its status." << endl;
+			}
+		}
+		else if (task->getExecutitiveId() == this->loggedUserId)
+		{
+			if (!task->getStatus())
+			{
+				cout << "The task is said to be in process, do you want set it as completed (Y/N)?" << endl
+					<< "> ";
+				cin.getline(buffer, 20);
+				if (buffer[0] == 'Y')
+				{
+					task->setStatus(true);
+					repo->Update(task);
+					cout << "The task is now completed." << endl;
+				}
+			}
+			else
+			{
+				cout << "The task is said to be completed so you cannot change its status." << endl;
+			}
+		}
+		else
+		{
+			cout << "You cannot change this task's status." << endl;
+		}
+	}
+	else
+	{
+		cout << "This task doesn't exist.";
+	}
+
+	delete repo;
+	delete task;
+	system("pause");
+}
+
 void TaskManagementView::Run()
 {
 	while (true)
@@ -336,6 +437,9 @@ void TaskManagementView::Run()
 		case CRUDMenuItems::Edit:
 			Edit();
 			break;
+		case CRUDMenuItems::UpdateStatus:
+			UpdateStatus();
+			break;
 		case CRUDMenuItems::Delete:
 			Delete();
 			break;
@@ -345,43 +449,9 @@ void TaskManagementView::Run()
 			cout << "Invalid choice" << endl;
 			system("pause");
 			break;
+		default : break;
 		}
 	}
 }
 
-void TaskManagementView::RenderTask(Task* task, int loggedUserId)
-{
 
-	UserRepository* userRepo = new UserRepository("users.txt");
-
-	User* executitive = userRepo->GetById(task->getExecutitiveId());
-	User* creator = userRepo->GetById(task->getCreatorId());
-
-	cout.setf(ios::boolalpha);
-	cout << "Index: " << task->getId() << endl
-		<< "Header: " << task->getHeader() << endl
-		<< "Description: " << task->getDescription() << endl
-		<< "Measurment: ";
-	if (task->getMeasurement() == 1)
-		cout << "1 hour" << endl;
-	else
-		cout << task->getMeasurement() << " hours" << endl;
-
-	cout << "Executitive: " << executitive->getFirstName() << " " << executitive->getLastName()
-		<< "(" << executitive->getId() << ") "
-		<< (executitive->getId() == loggedUserId ? "|You|" : "") << endl;
-
-	cout << "Creator: " << creator->getFirstName() << " " << creator->getLastName()
-		<< "(" << creator->getId() << ") "
-		<< (creator->getId() == loggedUserId ? "|You|" : "") << endl;
-
-	char* test = task->getTimeOfCreation();
-	cout << test << endl;
-	cout << "Created on: " << task->getTimeOfCreation() << endl
-		<< "Last edited on: " << task->getTimeOfLastUpdate() << endl
-		<< "Status: " << (task->getStatus() ? "Done" : "In process") << endl;
-
-	delete userRepo;
-	delete executitive;
-	delete creator;
-}

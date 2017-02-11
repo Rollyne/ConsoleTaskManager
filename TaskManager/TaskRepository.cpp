@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "string"
 #include "fstream"
 #include <ctime>
 #include <sstream>
@@ -240,22 +239,6 @@ LinkedList<Task>* TaskRepository::GetAll()
 		result->RemoveAt(resultCount - 1);
 
 	return result;
-}
-
-bool TaskRepository::UpdateStatus(Task* task, int parentId)
-{
-	if (task->getCreatorId() == parentId && !task->getStatus()) // If the one who changes the status is the creator and sets the status to IN PROCESS
-	{
-		this->Update(task); // We update the task(status)
-		return true;
-	}
-	else if (task->getExecutitiveId() == parentId && task->getStatus()) // If the one who changes the status is the executitive and sets the status to DONE
-	{
-		this->Update(task); // We update the task(status)
-		return true;
-	}
-	return false;
-	//Conclusion: The creator cannot set the status to DONE and the executitive cannot set the status to IN PROCESS
 }
 
 void TaskRepository::Update(Task * task)
