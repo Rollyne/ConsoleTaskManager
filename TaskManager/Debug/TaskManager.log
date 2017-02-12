@@ -1,3 +1,4 @@
-﻿  TaskManager.cpp
+﻿  TaskManagementView.cpp
+c:\users\princ\onedrive\documents\visual studio 2015\projects\taskmanager\taskmanager\taskmanagementview.cpp(86): warning C4715: 'TaskManagementView::RenderTaskMenu': not all control paths return a value
   TaskManager.vcxproj -> C:\Users\princ\onedrive\documents\visual studio 2015\Projects\TaskManager\Debug\TaskManager.exe
   TaskManager.vcxproj -> C:\Users\princ\onedrive\documents\visual studio 2015\Projects\TaskManager\Debug\TaskManager.pdb (Full PDB)

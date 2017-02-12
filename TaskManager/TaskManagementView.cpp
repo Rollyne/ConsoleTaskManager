@@ -376,12 +376,16 @@ void TaskManagementView::UpdateStatus()
 				{
 					task->setStatus(false);
 					repo->Update(task);
-					cout << "The task is now in process." << endl;
+					cout << "The task is now in process. You have to comment on this change." << endl;
+					system("pause");
+					CommentManagementView* view = new CommentManagementView(task->getId());
+					view->Add();
 				}
 			}
 			else
 			{
 				cout << "The task is said to be in process so you cannot change its status." << endl;
+				system("pause");
 			}
 		}
 		else if (task->getExecutitiveId() == this->loggedUserId)
@@ -395,27 +399,32 @@ void TaskManagementView::UpdateStatus()
 				{
 					task->setStatus(true);
 					repo->Update(task);
-					cout << "The task is now completed." << endl;
+					cout << "The task is now completed. You have to comment on this change." << endl;
+					system("pause");
+					CommentManagementView* view = new CommentManagementView(task->getId());
+					view->Add();
 				}
 			}
 			else
 			{
 				cout << "The task is said to be completed so you cannot change its status." << endl;
+				system("pause");
 			}
 		}
 		else
 		{
 			cout << "You cannot change this task's status." << endl;
+			system("pause");
 		}
 	}
 	else
 	{
 		cout << "This task doesn't exist.";
+		system("pause");
 	}
 
 	delete repo;
 	delete task;
-	system("pause");
 }
 
 void TaskManagementView::Run()

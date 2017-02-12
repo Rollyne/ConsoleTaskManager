@@ -10,13 +10,13 @@ private:
 
 	int taskId;
 
-	void Add();
 	void List();
 	void Edit();
 	void Delete();
 
 	CRUDMenuItems RenderMenu();
 public:
+	void Add();
 	CommentManagementView(int taskId);
 	~CommentManagementView();
 
