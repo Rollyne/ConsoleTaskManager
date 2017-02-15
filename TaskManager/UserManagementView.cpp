@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iostream"
+#include "Console.h"
 
 #include "UserManagementView.h"
 #include "UserRepository.h"
@@ -27,8 +28,18 @@ CRUDMenuItems UserManagementView::RenderMenu()
 		<< "[D]elete" << endl
 		<< "E[x]it" << endl
 		<< "> " ;
-	char buffer[2];
-	cin.getline(buffer, 2);
+	char* buffer;
+	try
+	{
+		buffer = Console::ReadLineMin(1);
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return CRUDMenuItems::Fail;
+	}
+	
 
 	switch (toupper(buffer[0]))
 	{
@@ -53,46 +64,44 @@ void UserManagementView::Add()
 	system("cls");
 
 	User* newUser = new User;
-	char buffer[20];
+	char* buffer;
+	try
+	{
+		cout << "## Create a user ##" << endl
+			<< "Username: ";
+		buffer = Console::ReadLineMin(nameMinLength);
+		newUser->setUsername(buffer);
 
-	cout << "## Create a user ##" << endl
-		<< "Username: ";
-	cin.getline(buffer, 20, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
+		cout << "Password: ";
+		buffer = Console::ReadLineMin(nameMinLength);
+		newUser->setPassword(buffer);
+
+		cout << "First name: ";
+		buffer = Console::ReadLineMin(nameMinLength);
+		newUser->setFirstName(buffer);
+
+		cout << "Last name: ";
+		buffer = Console::ReadLineMin(nameMinLength);
+		newUser->setLastName(buffer);
+
+		cout << "Is admin (Y/N): ";
+		buffer = Console::ReadLineMin(1);
+		if (toupper(buffer[0]) == 'Y')
+			newUser->setIsAdmin(true);
+		else
+			newUser->setIsAdmin(false);
+
+		UserRepository* repo = new UserRepository("users.txt");
+
+		repo->Add(newUser);
+		delete repo;
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
 		return;
-	newUser->setUsername(buffer);
-
-	cout << "Password: ";
-	cin.getline(buffer, 20, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
-		return;
-	newUser->setPassword(buffer);
-
-	cout << "First name: ";
-	cin.getline(buffer, 20, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
-		return;
-	newUser->setFirstName(buffer);
-
-	cout << "Last name: ";
-	cin.getline(buffer, 20, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
-		return;
-	newUser->setLastName(buffer);
-
-	cout << "Is admin (Y/N): ";
-	cin.getline(buffer, 20, '\n');
-	if (toupper(buffer[0]) == 'Y')
-		newUser->setIsAdmin(true);
-	else
-		newUser->setIsAdmin(false);
-
-	UserRepository* repo = new UserRepository("users.txt");
-	
-	repo->Add(newUser);
-
-
-	delete repo;
+	}
 	delete newUser;
 
 	system("pause");
@@ -130,63 +139,60 @@ void UserManagementView::List()
 void UserManagementView::Edit()
 {
 	system("cls");
-	
-	User* updated = new User;
-	User* outdated = new User;
-	char buffer[20];
 
 	cout << "## Update user ##" << endl
 		<< "Index of the user: ";
-	cin.getline(buffer, 20);
-	updated->setId(atoi(buffer));
-
-	UserRepository* repo = new UserRepository("users.txt");
-	
-	outdated = repo->GetById(atoi(buffer));
-	if (outdated != NULL) 
+	try
 	{
-		cout << "Username |" << outdated->getUsername() << "| : ";
-		cin.getline(buffer, 20);
-		if (!validate->IsMinLength(buffer, nameMinLength))
-			return;
-		updated->setUsername(buffer);
+		User* updated = new User;
+		User* outdated = new User;
+		char* buffer;
+		updated->setId(Console::ReadNumber());
 
-		cout << "Password |" << outdated->getPassword() << "| : ";
-		cin.getline(buffer, 20);
-		if (!validate->IsMinLength(buffer, nameMinLength))
-			return;
-		updated->setPassword(buffer);
+		UserRepository* repo = new UserRepository("users.txt");
 
-		cout << "First name |" << outdated->getFirstName() << "| : ";
-		cin.getline(buffer, 20);
-		if (!validate->IsMinLength(buffer, nameMinLength))
-			return;
-		updated->setFirstName(buffer);
+		outdated = repo->GetById(updated->getId());
+		if (outdated != NULL)
+		{
+			cout << "Username |" << outdated->getUsername() << "| : ";
+			buffer = Console::ReadLine(20, nameMinLength);
+			updated->setUsername(buffer);
 
-		cout << "Last name |" << outdated->getLastName() << "| : ";
-		cin.getline(buffer, 20);
-		if (!validate->IsMinLength(buffer, nameMinLength))
-			return;
-		updated->setLastName(buffer);
+			cout << "Password |" << outdated->getPassword() << "| : ";
+			buffer = Console::ReadLine(20, nameMinLength);
+			updated->setPassword(buffer);
 
-		cout.setf(ios::boolalpha);
-		cout << "Is admin |" << outdated->getIsAdmin() << "| (Y/N): ";
-		cin.getline(buffer, 20);
-		if (toupper(buffer[0]) == 'Y')
-			updated->setIsAdmin(true);
+			cout << "First name |" << outdated->getFirstName() << "| : ";
+			buffer = Console::ReadLine(20, nameMinLength);
+			updated->setFirstName(buffer);
+
+			cout << "Last name |" << outdated->getLastName() << "| : ";
+			buffer = Console::ReadLine(20, nameMinLength);
+			updated->setLastName(buffer);
+
+			cout.setf(ios::boolalpha);
+			cout << "Is admin |" << outdated->getIsAdmin() << "| (Y/N): ";
+			buffer = Console::ReadLineMin(1);
+			if (toupper(buffer[0]) == 'Y')
+				updated->setIsAdmin(true);
+			else
+				updated->setIsAdmin(false);
+
+			repo->Update(updated);
+
+			delete repo;
+			delete updated;
+			delete outdated;
+		}
 		else
-			updated->setIsAdmin(false);
-
-		repo->Update(updated);
+		{
+			cout << "This user doesn't exist." << endl;
+		}
 	}
-	else
+	catch (invalid_argument e)
 	{
-		cout << "This user doesn't exist." << endl;
+		cout << e.what() << endl;
 	}
-
-	delete repo;
-	delete updated;
-	delete outdated;
 
 	system("pause");
 }
@@ -195,15 +201,20 @@ void UserManagementView::Delete()
 {
 	system("cls");
 
-	char buffer[20];
-
-	
-
 	UserRepository* repo = new UserRepository("users.txt");
 	cout << "## Delete user ##" << endl
 		<< "Index of the user: ";
-	cin.getline(buffer, 20);
-	User* removed = repo->GetById(atoi(buffer));
+	User* removed;
+	try
+	{
+		removed = repo->GetById(Console::ReadNumber());
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
 	if (removed != NULL)
 	{
 		repo->Delete(removed);

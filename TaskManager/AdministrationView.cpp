@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iostream"
+#include "Console.h"
 
 #include "AdministrationView.h"
 #include "UserManagementView.h"
@@ -15,8 +16,18 @@ AdminMenuItems AdministrationView::RenderMenu()
 		<< "[T]ask management" << endl
 		<< "E[x]it" << endl
 		<< "> ";
-	char buffer[2];
-	cin.getline(buffer, 2);
+	char* buffer;
+	try
+	{
+		buffer = Console::ReadLineMin(1);
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return AdminMenuItems::AdminFail;
+	}
+	
 
 	switch (toupper(buffer[0]))
 	{
@@ -49,6 +60,12 @@ void AdministrationView::Run()
 		{
 			TaskManagementView view;
 			view.Run();
+			break;
+		}
+		case AdminMenuItems::AdminInvalid:
+		{
+			cout << "Invalid choice." << endl;
+			system("pause");
 			break;
 		}
 		case AdminMenuItems::AdminExit:

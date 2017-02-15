@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iostream"
+#include "Console.h"
 
 #include "TaskManagementView.h"
 #include "AuthenticationService.h"
@@ -12,8 +13,6 @@ using namespace std;
 
 TaskManagementView::TaskManagementView()
 {
-	validate = new ConsoleValidator();
-	this->loggedUserId = AuthenticationService::getLoggedUser()->getId();
 }
 
 
@@ -35,8 +34,18 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 		<< "[D]elete" << endl
 		<< "E[x]it" << endl
 		<< "> ";
-	char buffer[2];
-	cin.getline(buffer, 2);
+	char* buffer;
+	try
+	{
+		buffer = Console::ReadLineMin(1);
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return CRUDMenuItems::Fail;
+	}
+	
 
 	switch (toupper(buffer[0]))
 	{
@@ -63,14 +72,23 @@ TaskManagementMenuItems TaskManagementView::RenderTaskMenu(Task* task)
 {
 	system("cls");
 
-	TaskManagementView::RenderTask(task, this->loggedUserId);
+	TaskManagementView::RenderTask(task, AuthenticationService::getLoggedUser()->getId());
 	cout <<endl<< "## Task Properties ##" << endl
 		<< "[C]omments" << endl
 		<< "[T]ime Report" << endl
 		<< "E[x]it" << endl
 		<< "> ";
-	char buffer[2];
-	cin.getline(buffer, 2);
+	char* buffer;
+	try
+	{
+		buffer = Console::ReadLineMin(1);
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return TaskManagementMenuItems::TaskManagementFail;
+	}
 
 	switch (toupper(buffer[0]))
 	{
@@ -111,8 +129,6 @@ void TaskManagementView::RenderTask(Task* task, int loggedUserId)
 		<< "(" << creator->getId() << ") "
 		<< (creator->getId() == loggedUserId ? "|You|" : "") << endl;
 
-	char* test = task->getTimeOfCreation();
-	cout << test << endl;
 	cout << "Created on: " << task->getTimeOfCreation() << endl
 		<< "Last edited on: " << task->getTimeOfLastUpdate() << endl
 		<< "Status: " << (task->getStatus() ? "Done" : "In process") << endl;
@@ -128,31 +144,41 @@ void TaskManagementView::Add()
 	system("cls");
 
 	Task* newTask = new Task;
-	char buffer[200];
+	char* buffer;
 
 	cout << "## Create a task ##" << endl
 		<< "Header: ";
-	cin.getline(buffer, 50, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
+	try
+	{
+		buffer = Console::ReadLine(50, nameMinLength);
+		newTask->setHeader(buffer);
+
+		cout << "Descirption: ";
+		buffer = Console::ReadLine(200, nameMinLength);
+		newTask->setDescription(buffer);
+
+		cout << "Measurement(How many hours?): ";
+		newTask->setMeasurement(Console::ReadNumber());
+
+		cout << "Executitive's index(Who is going to do it?): ";
+		newTask->setExecutitiveId(Console::ReadNumber());
+		
+		UserRepository* repo = new UserRepository("users.txt");
+		if(repo->GetById(newTask->getExecutitiveId()) == NULL)
+		{
+			cout << "This user doesn't exist." << endl;
+			system("pause");
+			return;
+		}
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
 		return;
-	newTask->setHeader(buffer);
-
-	cout << "Descirption: ";
-	cin.getline(buffer, 200, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
-		return;
-	newTask->setDescription(buffer);
-
-	cout << "Measurement(How many hours?): ";
-	cin.getline(buffer, 20, '\n');
-
-	newTask->setMeasurement(atoi(buffer));
-
-	cout << "Executitive's index(Who is going to do it?): ";
-	cin.getline(buffer, 20, '\n');
-	newTask->setExecutitiveId(atoi(buffer));
-
-	newTask->setCreatorId(this->loggedUserId);
+	}
+	
+	newTask->setCreatorId(AuthenticationService::getLoggedUser()->getId());
 	newTask->setTimeOfCreation(time(0));
 	newTask->setTimeOfLastUpdate(time(0));
 	newTask->setStatus(false);
@@ -168,15 +194,13 @@ void TaskManagementView::Add()
 	system("pause");
 }
 
-
-
 void TaskManagementView::List()
 {
 	system("cls");
 
 	TaskRepository* repo = new TaskRepository("tasks.txt");
 	UserRepository* userRepo = new UserRepository("users.txt");
-	LinkedList<Task>* allTasks = repo->GetAll(this->loggedUserId);
+	LinkedList<Task>* allTasks = repo->GetAll(AuthenticationService::getLoggedUser()->getId());
 
 	int usersCount = allTasks->Count();
 
@@ -184,7 +208,7 @@ void TaskManagementView::List()
 	for (int i = 0; i < usersCount; i++)
 	{
 		cout << "# # # # # # # # # # # #" << endl;
-		TaskManagementView::RenderTask(allTasks->getItemAt(i), this->loggedUserId);
+		TaskManagementView::RenderTask(allTasks->getItemAt(i), AuthenticationService::getLoggedUser()->getId());
 	}
 
 	delete userRepo;
@@ -200,14 +224,23 @@ void TaskManagementView::View()
 
 	cout << "## View task ##" << endl
 		<< "Task index: ";
-	char buffer[20];
-	cin.getline(buffer, 20);
+	int index;
+	try
+	{
+		index = Console::ReadNumber();
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+	}
 
 	TaskRepository* repo = new TaskRepository("tasks.txt");
-	Task* target = repo->GetById(atoi(buffer));
+	Task* target = repo->GetById(index);
 	if (target != NULL)
 	{
-		if (target->getCreatorId() == this->loggedUserId || target->getExecutitiveId() == this->loggedUserId)
+		if (target->getCreatorId() == AuthenticationService::getLoggedUser()->getId()
+			|| target->getExecutitiveId() == AuthenticationService::getLoggedUser()->getId())
 		{
 			while (true)
 			{
@@ -263,56 +296,60 @@ void TaskManagementView::Edit()
 
 	cout << "## Update task ##" << endl
 		<< "Index of the task: ";
-	cin.getline(buffer, 20);
-	updated->setId(atoi(buffer));
-	
-	TaskRepository* repo = new TaskRepository("tasks.txt");
-	outdated = repo->GetById(atoi(buffer));
-	if (outdated != NULL)
+	try
 	{
-		if (this->loggedUserId == outdated->getCreatorId()) {
-			cout << "* Header *" << endl
-				<< outdated->getHeader() << endl
-				<< "> ";
-			cin.getline(buffer, 50);
-			if (!validate->IsMinLength(buffer, nameMinLength))
-				return;
-			updated->setHeader(buffer);
+		int index = Console::ReadNumber();
+		updated->setId(Console::ReadNumber());
 
-			cout << "* Description *" << endl
-				<< outdated->getDescription() << endl
-				<< "> ";
-			cin.getline(buffer, 200);
-			if (!validate->IsMinLength(buffer, nameMinLength))
-				return;
-			updated->setDescription(buffer);
+		TaskRepository* repo = new TaskRepository("tasks.txt");
+		outdated = repo->GetById(index);
+		if (outdated != NULL)
+		{
+			if (AuthenticationService::getLoggedUser()->getId() == outdated->getCreatorId()) {
+				cout << "* Header *" << endl
+					<< outdated->getHeader() << endl
+					<< "> ";
+				Console::ReadLine(50, nameMinLength);
+				updated->setHeader(buffer);
 
-			cout << "Measurment |" << outdated->getMeasurement() << "| : ";
-			cin.getline(buffer, 20);
-			updated->setMeasurement(atoi(buffer));
+				cout << "* Description *" << endl
+					<< outdated->getDescription() << endl
+					<< "> ";
+				Console::ReadLine(200, nameMinLength);
+				updated->setDescription(buffer);
 
-			cout << "Executitive's index |" << outdated->getExecutitiveId() << "| : ";
-			cin.getline(buffer, 20);
-			updated->setExecutitiveId(atoi(buffer));
+				cout << "Measurment |" << outdated->getMeasurement() << "| : ";
+				updated->setMeasurement(Console::ReadNumber());
 
-			updated->setCreatorId(outdated->getCreatorId());
-			updated->setTimeOfCreation(outdated->getRawTimeOfCreation());
-			updated->setTimeOfLastUpdate(time(0));
-			updated->setStatus(outdated->getStatus());
+				cout << "Executitive's index |" << outdated->getExecutitiveId() << "| : ";
+				updated->setExecutitiveId(Console::ReadNumber());
 
-			repo->Update(updated);
+				updated->setCreatorId(outdated->getCreatorId());
+				updated->setTimeOfCreation(outdated->getRawTimeOfCreation());
+				updated->setTimeOfLastUpdate(time(0));
+				updated->setStatus(outdated->getStatus());
+
+				repo->Update(updated);
+			}
+			else
+			{
+				cout << "You cannot edit this task." << endl;
+			}
 		}
 		else
 		{
-			cout << "You cannot edit this task." << endl;
+			cout << "This task doesn't exist." << endl;
 		}
+		delete repo;
 	}
-	else 
+	catch(invalid_argument e)
 	{
-		cout << "This task doesn't exist." << endl;
+		cout << e.what() << endl;
+		system("pause");
+		return;
 	}
+	
 
-	delete repo;
 	delete updated;
 	delete outdated;
 
@@ -323,16 +360,23 @@ void TaskManagementView::Delete()
 {
 	system("cls");
 
-	char buffer[20];
-
 	TaskRepository* repo = new TaskRepository("tasks.txt");
 	cout << "## Delete task ##" << endl
 		<< "Index of the task: ";
-	cin.getline(buffer, 20);
-	Task* removed = repo->GetById(atoi(buffer));
+	Task* removed;
+	try
+	{
+		removed = repo->GetById(Console::ReadNumber());
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
 	if (removed != NULL) 
 	{
-		if (this->loggedUserId == removed->getCreatorId())
+		if (AuthenticationService::getLoggedUser()->getId() == removed->getCreatorId())
 		{
 			repo->Delete(removed);
 			cout << "Task removed." << endl;
@@ -358,73 +402,79 @@ void TaskManagementView::UpdateStatus()
 	system("cls");
 	cout << "## Update task's status ##" << endl
 		<< "Task's index: ";
-	char buffer[20];
-	cin.getline(buffer, 20);
-
 	TaskRepository* repo = new TaskRepository("tasks.txt");
-	
-	Task* task = repo->GetById(atoi(buffer));
-	if (task != NULL) {
-		if (task->getCreatorId() == this->loggedUserId)
-		{
-			if (task->getStatus())
+	try
+	{
+		Task* task = repo->GetById(Console::ReadNumber());
+		if (task != NULL) {
+			if (task->getCreatorId() == AuthenticationService::getLoggedUser()->getId())
 			{
-				cout << "The task is said to be completed, do you want put it in process (Y/N)?" << endl
-					<< "> ";
-				cin.getline(buffer, 20);
-				if (buffer[0] == 'Y')
+				if (task->getStatus())
 				{
-					task->setStatus(false);
-					repo->Update(task);
-					cout << "The task is now in process. You have to comment on this change." << endl;
+					char* buffer = Console::ReadLineMin(1);
+					cout << "The task is said to be completed, do you want put it in process (Y/N)?" << endl
+						<< "> ";
+					if (buffer[0] == 'Y')
+					{
+						task->setStatus(false);
+						repo->Update(task);
+						cout << "The task is now in process. You have to comment on this change." << endl;
+						system("pause");
+						CommentManagementView* view = new CommentManagementView(task->getId());
+						view->Add();
+					}
+				}
+				else
+				{
+					cout << "The task is said to be in process so you cannot change its status." << endl;
 					system("pause");
-					CommentManagementView* view = new CommentManagementView(task->getId());
-					view->Add();
+				}
+			}
+			else if (task->getExecutitiveId() == AuthenticationService::getLoggedUser()->getId())
+			{
+				if (!task->getStatus())
+				{
+					char* buffer = Console::ReadLineMin(1);
+					cout << "The task is said to be in process, do you want set it as completed (Y/N)?" << endl
+						<< "> ";
+					if (buffer[0] == 'Y')
+					{
+						task->setStatus(true);
+						repo->Update(task);
+						cout << "The task is now completed. You have to comment on this change." << endl;
+						system("pause");
+						CommentManagementView* view = new CommentManagementView(task->getId());
+						view->Add();
+					}
+				}
+				else
+				{
+					cout << "The task is said to be completed so you cannot change its status." << endl;
+					system("pause");
 				}
 			}
 			else
 			{
-				cout << "The task is said to be in process so you cannot change its status." << endl;
-				system("pause");
-			}
-		}
-		else if (task->getExecutitiveId() == this->loggedUserId)
-		{
-			if (!task->getStatus())
-			{
-				cout << "The task is said to be in process, do you want set it as completed (Y/N)?" << endl
-					<< "> ";
-				cin.getline(buffer, 20);
-				if (buffer[0] == 'Y')
-				{
-					task->setStatus(true);
-					repo->Update(task);
-					cout << "The task is now completed. You have to comment on this change." << endl;
-					system("pause");
-					CommentManagementView* view = new CommentManagementView(task->getId());
-					view->Add();
-				}
-			}
-			else
-			{
-				cout << "The task is said to be completed so you cannot change its status." << endl;
+				cout << "You cannot change this task's status." << endl;
 				system("pause");
 			}
 		}
 		else
 		{
-			cout << "You cannot change this task's status." << endl;
+			cout << "This task doesn't exist." << endl;
 			system("pause");
 		}
+		delete task;
 	}
-	else
+	catch(invalid_argument e)
 	{
-		cout << "This task doesn't exist.";
+		cout << e.what() << endl;
 		system("pause");
+		return;
 	}
+	
 
 	delete repo;
-	delete task;
 }
 
 void TaskManagementView::Run()

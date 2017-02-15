@@ -8,18 +8,21 @@ enum CRUDMenuItems
 	UpdateStatus,
 	Delete,
 	Exit,
-	Invalid
+	Invalid,
+	Fail
 };
 enum AdminMenuItems
 {
 	UserManagement,
 	TaskManagement,
 	AdminExit,
-	AdminInvalid
+	AdminInvalid,
+	AdminFail
 };
 enum TaskManagementMenuItems
 {
 	CommentManagement,
 	TimeReportManagement,
-	TaskManagementExit
+	TaskManagementExit,
+	TaskManagementFail
 };

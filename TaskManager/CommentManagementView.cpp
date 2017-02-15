@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iostream"
+#include "Console.h"
 
 #include "CommentManagementView.h"
 #include "CommentRepository.h"
@@ -13,7 +14,6 @@ using namespace std;
 CommentManagementView::CommentManagementView(int taskId)
 {
 	this->taskId = taskId;
-	this->loggedUserId = AuthenticationService::getLoggedUser()->getId();
 }
 
 
@@ -26,7 +26,7 @@ CRUDMenuItems CommentManagementView::RenderMenu()
 	system("cls");
 
 	TaskRepository* repo = new TaskRepository("tasks.txt");	
-	TaskManagementView::RenderTask(repo->GetById(this->taskId), this->loggedUserId);
+	TaskManagementView::RenderTask(repo->GetById(this->taskId), AuthenticationService::getLoggedUser()->getId());
 	delete repo;
 	
 	cout << endl << "## Comments Management ##" << endl
@@ -36,8 +36,18 @@ CRUDMenuItems CommentManagementView::RenderMenu()
 		<< "[D]elete" << endl
 		<< "E[x]it" << endl
 		<< "> " ;
-	char buffer[2];
-	cin.getline(buffer, 2);
+	char* buffer;
+	try
+	{
+		buffer = Console::ReadLineMin(1);
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return CRUDMenuItems::Fail;
+	}
+	
 
 	switch (toupper(buffer[0]))
 	{
@@ -62,17 +72,24 @@ void CommentManagementView::Add()
 	system("cls");
 
 	Comment* newComment = new Comment;
-	char buffer[200];
+	char* buffer;
 
 	cout << "## Add a comment ##" << endl
 		<< "Body: ";
-	cin.getline(buffer, 200, '\n');
-	if (!validate->IsMinLength(buffer, nameMinLength))
+	try
+	{
+		buffer = Console::ReadLine(200, nameMinLength);
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
 		return;
+	}
 	newComment->setBody(buffer);
 
 	newComment->setTaskId(this->taskId);
-	newComment->setAuthorId(this->loggedUserId);
+	newComment->setAuthorId(AuthenticationService::getLoggedUser()->getId());
 
 	CommentRepository* repo = new CommentRepository("comments.txt");
 	
@@ -105,7 +122,7 @@ void CommentManagementView::List()
 			<< "Index: " << current->getId() << endl
 			<< "Author: " << author->getFirstName() << " " << author->getLastName()
 			<< "(" << author->getId() << ") "
-			<< (author->getId() == this->loggedUserId ? "|You|" : "") << endl
+			<< (author->getId() == AuthenticationService::getLoggedUser()->getId() ? "|You|" : "") << endl
 			<< current->getBody() << endl;
 	}
 
@@ -121,29 +138,46 @@ void CommentManagementView::Edit()
 	system("cls");
 	
 	Comment* updated = new Comment;
-	Comment* outdated = new Comment;
-	char buffer[20];
 
 	cout << "## Update comment ##" << endl
 		<< "Index of the comment: ";
-	cin.getline(buffer, 20);
-	updated->setId(atoi(buffer));
+	int index;
+	try
+	{
+		index = Console::ReadNumber();
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
+	updated->setId(index);
 
 	CommentRepository* repo = new CommentRepository("comments.txt");
 	
 
-	outdated = repo->GetById(atoi(buffer));
+	Comment* outdated = repo->GetById(index);
 	if (outdated != NULL) 
 	{
 		if (outdated->getTaskId() == this->taskId)
 		{
-			if (outdated->getAuthorId() == this->loggedUserId) 
+			if (outdated->getAuthorId() == AuthenticationService::getLoggedUser()->getId())
 			{
-				char buffer[200];
+				char* buffer;
 				cout << "* Body *" << endl
 					<< outdated->getBody() << endl
 					<< "> ";
-				cin.getline(buffer, 200);
+				try
+				{
+					buffer = Console::ReadLine(200, nameMinLength);
+				}
+				catch (invalid_argument e)
+				{
+					cout << e.what() << endl;
+					system("pause");
+					return;
+				}
 				updated->setBody(buffer);
 
 				updated->setTaskId(outdated->getTaskId());
@@ -177,20 +211,26 @@ void CommentManagementView::Delete()
 {
 	system("cls");
 
-	char buffer[20];
-
-	
-
 	CommentRepository* repo = new CommentRepository("comments.txt");
 	cout << "## Delete comment ##" << endl
 		<< "Index of the comment: ";
-	cin.getline(buffer, 20);
-	Comment* removed = repo->GetById(atoi(buffer));
+	int index;
+	try
+	{
+		index = Console::ReadNumber();
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
+	Comment* removed = repo->GetById(index);
 	if (removed != NULL)
 	{
 		if (removed->getTaskId() == this->taskId)
 		{
-			if (removed->getAuthorId() == this->loggedUserId)
+			if (removed->getAuthorId() == AuthenticationService::getLoggedUser()->getId())
 			{
 				repo->Delete(removed);
 

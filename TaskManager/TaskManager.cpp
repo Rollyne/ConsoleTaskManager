@@ -6,6 +6,7 @@
 #include "AuthenticationService.h"
 #include "AdministrationView.h"
 #include "TaskManagementView.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -15,16 +16,25 @@ int main()
 	{
 		system("cls");
 
-		char username[20];
-		char password[20];
+		char* username;
+		char* password;
 		cout << "## Login ##" << endl;
-		cout << "Username: ";
-		cin.getline(username, 20);
+		try 
+		{
+			cout << "Username: ";
+			username = Console::ReadLine(20);
 
-		cout << "Password: ";
-		cin.getline(password, 20);
+			cout << "Password: ";
+			password = Console::ReadLine(20);
+			AuthenticationService::Authenticate(username, password);
+		}
+		catch(invalid_argument e)
+		{
+			cout << e.what() << endl;
+			system("pause");
+		}
 
-		AuthenticationService::Authenticate(username, password);
+		
 	}
 
 	if (AuthenticationService::getLoggedUser()->getIsAdmin())

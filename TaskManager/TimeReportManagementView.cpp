@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iostream"
+#include "Console.h"
 
 #include "TimeReportManagementView.h"
 #include "TimeReportRepository.h"
@@ -12,9 +13,7 @@ using namespace std;
 
 TimeReportManagementView::TimeReportManagementView(int taskId)
 {
-	this->validate = new ConsoleValidator();
 	this->taskId = taskId;
-	this->loggedUserId = AuthenticationService::getLoggedUser()->getId();
 }
 
 
@@ -27,7 +26,7 @@ CRUDMenuItems TimeReportManagementView::RenderMenu()
 	system("cls");
 
 	TaskRepository* repo = new TaskRepository("tasks.txt");
-	TaskManagementView::RenderTask(repo->GetById(this->taskId), this->loggedUserId);
+	TaskManagementView::RenderTask(repo->GetById(this->taskId), AuthenticationService::getLoggedUser()->getId());
 	delete repo;
 
 	cout << endl << "## Time Reports Management ##" << endl
@@ -37,8 +36,18 @@ CRUDMenuItems TimeReportManagementView::RenderMenu()
 		<< "[D]elete" << endl
 		<< "E[x]it" << endl
 		<< "> ";
-	char buffer[2];
-	cin.getline(buffer, 2);
+	char* buffer;
+	try
+	{
+		buffer = Console::ReadLineMin(1);
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return CRUDMenuItems::Fail;
+	}
+	
 
 	switch (toupper(buffer[0]))
 	{
@@ -63,15 +72,22 @@ void TimeReportManagementView::Add()
 	system("cls");
 
 	TimeReport* newReport = new TimeReport;
-	char buffer[20];
 
 	cout << "## Report time spent on task id: " << this->taskId << " ##" << endl
 		<< "Time in hours: ";
-	cin.getline(buffer, 20);
-	newReport->setHoursSpent(atoi(buffer));
-
+	
+	try
+	{
+		newReport->setHoursSpent(Console::ReadNumber());
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
 	newReport->setTaskId(this->taskId);
-	newReport->setRepotrterId(this->loggedUserId);
+	newReport->setRepotrterId(AuthenticationService::getLoggedUser()->getId());
 	newReport->setTimeOfReport(time(0));
 
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
@@ -105,7 +121,7 @@ void TimeReportManagementView::List()
 			<< "Index: " << current->getId() << endl
 			<< "Reporter: " << reporter->getFirstName() << " " << reporter->getLastName()
 			<< "(" << reporter->getId() << ") "
-			<< (reporter->getId() == this->loggedUserId ? "|You|" : "") << endl
+			<< (reporter->getId() == AuthenticationService::getLoggedUser()->getId() ? "|You|" : "") << endl
 			<< "Time reported: ";
 		if (current->getHoursSpent() == 1)
 			cout << "1 hour" << endl;
@@ -127,27 +143,48 @@ void TimeReportManagementView::Edit()
 
 	TimeReport* updated = new TimeReport();
 	TimeReport* outdated = new TimeReport();
-	char buffer[20];
+	
 
 	cout << "## Update report ##" << endl
 		<< "Index of the report: ";
-	cin.getline(buffer, 20);
-	updated->setId(atoi(buffer));
+	int buffer;
+	try
+	{
+		buffer = Console::ReadNumber();
+	}
+	catch(invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
+	
+	updated->setId(buffer);
 
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
 
 
-	outdated = repo->GetById(atoi(buffer));
+	outdated = repo->GetById(buffer);
 	if (outdated != NULL)
 	{
 		if (outdated->getTaskId() == this->taskId)
 		{
-			if (outdated->getReporterId() == this->loggedUserId)
+			if (outdated->getReporterId() == AuthenticationService::getLoggedUser()->getId())
 			{
-				char buffer[200];
+				
 				cout << "Time spent |" << outdated->getHoursSpent() << "| : ";
-				cin.getline(buffer, 200);
-				updated->setHoursSpent(atoi(buffer));
+				try
+				{
+					buffer = Console::ReadNumber();
+				}
+				catch (invalid_argument e)
+				{
+					cout << e.what() << endl;
+					system("pause");
+					return;
+				}
+
+				updated->setHoursSpent(buffer);
 
 				updated->setTaskId(outdated->getTaskId());
 				updated->setRepotrterId(outdated->getReporterId());
@@ -181,20 +218,27 @@ void TimeReportManagementView::Delete()
 {
 	system("cls");
 
-	char buffer[20];
-
-
-
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
 	cout << "## Delete report ##" << endl
 		<< "Index of the comment: ";
-	cin.getline(buffer, 20);
-	TimeReport* removed = repo->GetById(atoi(buffer));
+	int buffer;
+	try
+	{
+		buffer = Console::ReadNumber();
+	}
+	catch (invalid_argument e)
+	{
+		cout << e.what() << endl;
+		system("pause");
+		return;
+	}
+
+	TimeReport* removed = repo->GetById(buffer);
 	if (removed != NULL)
 	{
 		if (removed->getTaskId() == this->taskId)
 		{
-			if (removed->getReporterId() == this->loggedUserId)
+			if (removed->getReporterId() == AuthenticationService::getLoggedUser()->getId())
 			{
 				repo->Delete(removed);
 

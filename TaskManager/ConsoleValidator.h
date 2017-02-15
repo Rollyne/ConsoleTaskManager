@@ -1,11 +1,13 @@
 #pragma once
-#include "string.h"
+#include <string>
 class ConsoleValidator
 {
+
 public:
 	ConsoleValidator();
 	~ConsoleValidator();
 
-	bool IsMinLength(char* charArray, int minLength);
+	static bool IsMoreThan(char* charArray, int minLength);
+	static bool IsMoreThan(std::string input, int minLength);
 };
 

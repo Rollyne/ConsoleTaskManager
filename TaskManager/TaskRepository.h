@@ -15,11 +15,7 @@ public:
 	LinkedList<Task>* GetAll(int parentId);
 	LinkedList<Task>* GetAll();
 
-	bool Update(Task* task, int parentId);
-	bool UpdateStatus(Task* task, int parentId);
 	void Update(Task* task);
-
-	bool Delete(Task* task, int parentId);
 	void Delete(Task* task);
 
 	TaskRepository(char filepath[50]);

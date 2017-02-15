@@ -104,7 +104,7 @@ void Task::setTimeOfLastUpdate(time_t time)
 	localtime_s(&timeinfo, &time);
 
 	char timeOfLastUpdate[80];
-	strftime(timeOfLastUpdate, 80, "%d/%m/%Y %I:%M:%S", &timeinfo);
+	strftime(timeOfLastUpdate, 80, "%d/%m/%Y %I:%M:%S %p", &timeinfo);
 	strcpy_s(this->timeOfLastUpdate, timeOfLastUpdate);
 }
 
