@@ -1,13 +1,11 @@
 #pragma once
 #include "Task.h"
 #include "CommentRepository.h"
-#include <ctime>
 class TaskRepository
 {
 private:
 	int getNextId();
 	char filepath[50];
-	static time_t charToTime(char charArray[200]);
 public:
 	void Add(Task* task);
 

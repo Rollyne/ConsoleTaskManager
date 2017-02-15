@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include <ctime>
 #include <string>
+#include "DateTime.h"
 
 #include "TimeReport.h"
 
@@ -58,12 +58,7 @@ void TimeReport::setTimeOfReport(time_t time)
 {
 	this->rawTimeOfReport = time;
 
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &time);
-
-	char timeOfCreation[80];
-	strftime(timeOfCreation, 80, "%d/%m/%Y %I:%M:%S %p", &timeinfo);
-	strcpy_s(this->timeOfReport, timeOfCreation);
+	strcpy_s(this->timeOfReport, 80, DateTime::FormatDate(time));
 }
 
 time_t TimeReport::getRawTimeOfReport()

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "string.h"
 #include <ctime>
+#include "DateTime.h"
 
 #include "Task.h"
 
@@ -78,12 +79,7 @@ void Task::setTimeOfCreation(time_t time)
 {
 	this->rawTimeOfCreation = time;
 
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &time);
-
-	char timeOfCreation[80];
-	strftime(timeOfCreation, 80, "%d/%m/%Y %I:%M:%S %p", &timeinfo);
-	strcpy_s(this->timeOfCreation, timeOfCreation);
+	strcpy_s(this->timeOfCreation, 80, DateTime::FormatDate(time));
 }
 
 time_t Task::getRawTimeOfCreation()
@@ -100,12 +96,7 @@ void Task::setTimeOfLastUpdate(time_t time)
 {
 	this->rawTimeOfLastUpdate = time;
 
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &time);
-
-	char timeOfLastUpdate[80];
-	strftime(timeOfLastUpdate, 80, "%d/%m/%Y %I:%M:%S %p", &timeinfo);
-	strcpy_s(this->timeOfLastUpdate, timeOfLastUpdate);
+	strcpy_s(this->timeOfLastUpdate, 80, DateTime::FormatDate(time));
 }
 
 time_t Task::getRawTimeOfLastUpdate()

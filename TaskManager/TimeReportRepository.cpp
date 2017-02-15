@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "TimeReportRepository.h"
+#include "DateTime.h"
 
 using namespace std;
 
@@ -14,14 +15,6 @@ TimeReportRepository::TimeReportRepository(char filepath[50])
 
 TimeReportRepository::~TimeReportRepository()
 {
-}
-
-time_t TimeReportRepository::charToTime(char charArray[200])
-{
-	istringstream ss(charArray);
-	time_t result;
-	ss >> result;
-	return result;
 }
 
 int TimeReportRepository::getNextId()
@@ -103,7 +96,7 @@ TimeReport * TimeReportRepository::GetById(int id)
 
 			in.getline(buffer, 80);
 			if(strlen(buffer) > 0)
-				current->setTimeOfReport(charToTime(buffer));
+				current->setTimeOfReport(DateTime::CharToTime(buffer));
 
 			if (!in.eof() && current->getId() == id)
 			{
@@ -142,7 +135,7 @@ LinkedList<TimeReport>* TimeReportRepository::GetAll(int taskId)
 
 			in.getline(buffer, 80);
 			if (strlen(buffer) > 0)
-				current->setTimeOfReport(charToTime(buffer));
+				current->setTimeOfReport(DateTime::CharToTime(buffer));
 
 			if (current->getTaskId() == taskId)
 				result->Add(current);
@@ -179,7 +172,7 @@ void TimeReportRepository::Update(TimeReport * report)
 
 			oldFile.getline(buffer, 80);
 			if (strlen(buffer) > 0)
-				current->setTimeOfReport(charToTime(buffer));
+				current->setTimeOfReport(DateTime::CharToTime(buffer));
 
 			if (!oldFile.eof() && current->getId() != report->getId())
 			{
@@ -234,7 +227,7 @@ void TimeReportRepository::Delete(TimeReport * report)
 
 			oldFile.getline(buffer, 80);
 			if (strlen(buffer) > 0)
-				current->setTimeOfReport(charToTime(buffer));
+				current->setTimeOfReport(DateTime::CharToTime(buffer));
 
 			if (!oldFile.eof() && current->getId() != report->getId())
 			{

@@ -151,6 +151,7 @@
     <ClInclude Include="CommentManagementView.h" />
     <ClInclude Include="CommentRepository.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="DateTime.h" />
     <ClInclude Include="MenuItems.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="stdafx.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="CommentManagementView.cpp" />
     <ClCompile Include="CommentRepository.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="DateTime.cpp" />
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

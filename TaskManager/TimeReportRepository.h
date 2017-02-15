@@ -7,7 +7,6 @@ class TimeReportRepository
 private:
 	int getNextId();
 	char filepath[50];
-	time_t charToTime(char charArray[200]);
 public:
 	void Add(TimeReport* report);
 

@@ -2,6 +2,7 @@
 #include "fstream"
 #include <ctime>
 #include <sstream>
+#include "DateTime.h"
 
 #include "TaskRepository.h"
 
@@ -16,14 +17,6 @@ TaskRepository::TaskRepository(char filepath[50])
 
 TaskRepository::~TaskRepository()
 {
-}
-
-time_t TaskRepository::charToTime(char charArray[200])
-{
-	istringstream ss(charArray);
-	time_t result;
-	ss >> result;
-	return result;
 }
 
 int TaskRepository::getNextId()
@@ -119,11 +112,11 @@ Task * TaskRepository::GetById(int id)
 
 			in.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfCreation(charToTime(buffer));
+				current->setTimeOfCreation(DateTime::CharToTime(buffer));
 
 			in.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfLastUpdate(charToTime(buffer));
+				current->setTimeOfLastUpdate(DateTime::CharToTime(buffer));
 
 			in.getline(buffer, 20);
 			current->setStatus(atoi(buffer));
@@ -171,11 +164,11 @@ LinkedList<Task>* TaskRepository::GetAll(int parentId)
 
 			in.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfCreation(charToTime(buffer));
+				current->setTimeOfCreation(DateTime::CharToTime(buffer));
 
 			in.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfLastUpdate(charToTime(buffer));
+				current->setTimeOfLastUpdate(DateTime::CharToTime(buffer));
 
 			in.getline(buffer, 20);
 			current->setStatus(atoi(buffer));
@@ -221,11 +214,11 @@ LinkedList<Task>* TaskRepository::GetAll()
 
 			in.getline(buffer, 200);
 			if(strlen(buffer) > 0)
-				current->setTimeOfCreation(charToTime(buffer));
+				current->setTimeOfCreation(DateTime::CharToTime(buffer));
 
 			in.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfLastUpdate(charToTime(buffer));
+				current->setTimeOfLastUpdate(DateTime::CharToTime(buffer));
 
 			in.getline(buffer, 20);
 			current->setStatus(atoi(buffer));
@@ -274,11 +267,11 @@ void TaskRepository::Update(Task * task)
 
 			oldFile.getline(buffer, 200);
 			if(strlen(buffer) > 0)
-				current->setTimeOfCreation(charToTime(buffer));
+				current->setTimeOfCreation(DateTime::CharToTime(buffer));
 
 			oldFile.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfLastUpdate(charToTime(buffer));
+				current->setTimeOfLastUpdate(DateTime::CharToTime(buffer));
 
 			oldFile.getline(buffer, 20);;
 			current->setStatus(atoi(buffer));
@@ -350,11 +343,11 @@ void TaskRepository::Delete(Task * user)
 
 			oldFile.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfCreation(charToTime(buffer));
+				current->setTimeOfCreation(DateTime::CharToTime(buffer));
 
 			oldFile.getline(buffer, 200);
 			if (strlen(buffer) > 0)
-				current->setTimeOfLastUpdate(charToTime(buffer));
+				current->setTimeOfLastUpdate(DateTime::CharToTime(buffer));
 
 			oldFile.getline(buffer, 20);
 			current->setStatus(atoi(buffer));

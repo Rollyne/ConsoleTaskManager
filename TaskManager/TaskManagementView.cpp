@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "iostream"
 #include "Console.h"
+#include <time.h>
 
 #include "TaskManagementView.h"
 #include "AuthenticationService.h"
