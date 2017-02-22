@@ -57,12 +57,6 @@
     <ClInclude Include="User.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Task.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Comment.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="UserRepository.h">
       <Filter>Header Files\Repositories</Filter>
     </ClInclude>
@@ -75,41 +69,20 @@
     <ClInclude Include="MenuItems.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="TimeReport.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="AuthenticationService.h">
       <Filter>Header Files\Services</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleValidator.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="CommentRepository.h">
-      <Filter>Header Files\Repositories</Filter>
-    </ClInclude>
-    <ClInclude Include="TaskRepository.h">
-      <Filter>Header Files\Repositories</Filter>
-    </ClInclude>
-    <ClInclude Include="TaskManagementView.h">
-      <Filter>Header Files\Views</Filter>
-    </ClInclude>
-    <ClInclude Include="AdministrationView.h">
-      <Filter>Header Files\Views</Filter>
-    </ClInclude>
-    <ClInclude Include="CommentManagementView.h">
-      <Filter>Header Files\Views</Filter>
-    </ClInclude>
-    <ClInclude Include="TimeReportRepository.h">
-      <Filter>Header Files\Repositories</Filter>
-    </ClInclude>
-    <ClInclude Include="TimeReportManagementView.h">
-      <Filter>Header Files\Views</Filter>
-    </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
     <ClInclude Include="DateTime.h">
       <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseRepository.h">
+      <Filter>Header Files\Repositories</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -122,12 +95,6 @@
     <ClCompile Include="User.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Task.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Comment.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="UserRepository.cpp">
       <Filter>Source Files\Repositories</Filter>
     </ClCompile>
@@ -137,41 +104,20 @@
     <ClCompile Include="UserManagementView.cpp">
       <Filter>Source Files\Views</Filter>
     </ClCompile>
-    <ClCompile Include="TimeReport.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="AuthenticationService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleValidator.cpp">
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="CommentRepository.cpp">
-      <Filter>Source Files\Repositories</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskRepository.cpp">
-      <Filter>Source Files\Repositories</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskManagementView.cpp">
-      <Filter>Source Files\Views</Filter>
-    </ClCompile>
-    <ClCompile Include="AdministrationView.cpp">
-      <Filter>Source Files\Views</Filter>
-    </ClCompile>
-    <ClCompile Include="CommentManagementView.cpp">
-      <Filter>Source Files\Views</Filter>
-    </ClCompile>
-    <ClCompile Include="TimeReportRepository.cpp">
-      <Filter>Source Files\Repositories</Filter>
-    </ClCompile>
-    <ClCompile Include="TimeReportManagementView.cpp">
-      <Filter>Source Files\Views</Filter>
-    </ClCompile>
     <ClCompile Include="Console.cpp">
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
     <ClCompile Include="DateTime.cpp">
       <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseRepository.cpp">
+      <Filter>Source Files\Repositories</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

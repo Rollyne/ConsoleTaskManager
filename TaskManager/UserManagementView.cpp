@@ -4,7 +4,6 @@
 
 #include "UserManagementView.h"
 #include "UserRepository.h"
-#include "User.h"
 
 using namespace std;
 
@@ -145,13 +144,13 @@ void UserManagementView::Edit()
 	try
 	{
 		User* updated = new User;
-		User* outdated = new User;
+		
 		char* buffer;
 		updated->setId(Console::ReadNumber());
 
 		UserRepository* repo = new UserRepository("users.txt");
 
-		outdated = repo->GetById(updated->getId());
+		 auto outdated = repo->GetById(updated->getId());
 		if (outdated != NULL)
 		{
 			cout << "Username |" << outdated->getUsername() << "| : ";

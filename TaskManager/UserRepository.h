@@ -1,24 +1,14 @@
 #pragma once
 #include "User.h"
-#include "LinkedList.cpp"
+#include "BaseRepository.h"
 
-class UserRepository
+class UserRepository : public BaseRepository<User>
 {
-private:
-	int getNextId();
-	char filepath[50];
+protected:
+	void writeItem(User* item, std::ofstream* file) override;
+	User* readItem(std::ifstream* file) override;
 public:
-	void Add(User* user);
-
-	User* GetById(int id);
-	LinkedList<User>* GetAll();
 	User* GetByUsernameAndPassword(char username[20], char password[20]);
-
-	void Update(User* user);
-
-	void Delete(User* user);
-
-	UserRepository(char filepath[50]);
-	~UserRepository();
+	explicit UserRepository(char filepath[50]) : BaseRepository<User>(filepath) {}
 };
 

@@ -2,17 +2,14 @@
 //
 
 #include "stdafx.h"
-#include "iostream"
-#include "AuthenticationService.h"
-#include "AdministrationView.h"
-#include "TaskManagementView.h"
+#include "UserManagementView.h"
 #include "Console.h"
 
 using namespace std;
 
 int main()
 {
-	while (AuthenticationService::getLoggedUser() == NULL)
+	/*while (AuthenticationService::getLoggedUser() == NULL)
 	{
 		system("cls");
 
@@ -35,20 +32,10 @@ int main()
 		}
 
 		
-	}
+	}*/
 
-	if (AuthenticationService::getLoggedUser()->getIsAdmin())
-	{
-		AdministrationView view;
-		view.Run();
-		return 0;
-	}
-	else 
-	{
-		TaskManagementView view;
-		view.Run();
-		return 0;
-	}
+	UserManagementView view;
+	view.Run();
 	
 }
 
