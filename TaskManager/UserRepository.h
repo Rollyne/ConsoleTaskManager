@@ -1,6 +1,6 @@
 #pragma once
 #include "User.h"
-#include "BaseRepository.h"
+#include "BaseRepository.cpp"
 
 class UserRepository : public BaseRepository<User>
 {

@@ -2,22 +2,13 @@
 #include "Comment.h"
 #include "UserRepository.h"
 
-class CommentRepository
+class CommentRepository : public BaseRepository<Comment>
 {
-private:
-	int getNextId();
-	char filepath[50];
+protected:
+	void writeItem(Comment* item, std::ofstream* file) override;
+	Comment* readItem(std::ifstream* file) override;
 public:
-	void Add(Comment* comment);
-
-	Comment* GetById(int id);
-	LinkedList<Comment>* GetAll(int taskId);
-
-	void Update(Comment* comment);
-
-	void Delete(Comment* comment);
-
-	CommentRepository(char filepath[50]);
-	~CommentRepository();
+	LinkedList<Comment>* GetAll(int parentId);
+	explicit CommentRepository(char filepath[50]) : BaseRepository<Comment>(filepath) {}
 };
 

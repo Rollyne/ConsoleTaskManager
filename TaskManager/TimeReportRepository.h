@@ -2,22 +2,13 @@
 #include "TimeReport.h"
 #include "UserRepository.h"
 
-class TimeReportRepository
+class TimeReportRepository : public BaseRepository<TimeReport>
 {
-private:
-	int getNextId();
-	char filepath[50];
+protected:
+	void writeItem(TimeReport* item, std::ofstream* file) override;
+	TimeReport* readItem(std::ifstream* file) override;
 public:
-	void Add(TimeReport* report);
-
-	TimeReport* GetById(int id);
-	LinkedList<TimeReport>* GetAll(int taskId);
-
-	void Update(TimeReport* report);
-
-	void Delete(TimeReport* report);
-
-	TimeReportRepository(char filepath[50]);
-	~TimeReportRepository();
+	LinkedList<TimeReport>* GetAll(int parentId);
+	explicit TimeReportRepository(char filepath[50]) : BaseRepository<TimeReport>(filepath) {}
 };
 

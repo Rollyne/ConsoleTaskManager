@@ -89,7 +89,7 @@ void BaseRepository<T>::Update(T* item)
 			}
 			else if (!oldFile.eof() && current->getId() == item->getId())
 			{
-				writeItem(item, newFile);
+				writeItem(item, &newFile);
 			}
 		}
 		newFile.close();
@@ -115,7 +115,7 @@ void BaseRepository<T>::Delete(T* item)
 
 			if (!oldFile.eof() && current->getId() != item->getId())
 			{
-				writeItem(current, newFile);
+				writeItem(current, &newFile);
 			}
 		}
 		newFile.close();

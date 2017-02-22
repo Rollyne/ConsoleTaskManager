@@ -1,6 +1,7 @@
 #pragma once
 #include "fstream"
 #include "LinkedList.cpp"
+
 template <class T>
 class BaseRepository
 {
@@ -16,7 +17,6 @@ public:
 
 	T* GetById(int id);
 	LinkedList<T>* GetAll();
-	//LinkedList<T>* GetAll(int parentId);
 
 	void Update(T* item);
 	void Delete(T* item);

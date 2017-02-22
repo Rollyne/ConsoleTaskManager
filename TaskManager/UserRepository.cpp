@@ -10,7 +10,9 @@ void UserRepository::writeItem( User* item, ofstream* file)
 
 	if (file->is_open())
 	{
-		*file << this->getNextId() << endl
+		if (item->getId() < 0) // If it is less than zero it is undefined
+			item->setId(this->getNextId());
+		*file << item->getId() << endl
 			<< item->getUsername() << endl
 			<< item->getPassword() << endl
 			<< item->getFirstName() << endl
@@ -25,7 +27,7 @@ User* UserRepository::readItem(ifstream* file)
 
 	if (file->is_open())
 	{
-		User* current = NULL;
+		User* current = new User;
 		char buffer[20];
 
 		file->getline(buffer, 20);
@@ -46,6 +48,8 @@ User* UserRepository::readItem(ifstream* file)
 		file->getline(buffer, 20);
 		current->setIsAdmin(atoi(buffer));
 
+		result = current;
+
 	}
 	return result;
 }
@@ -60,26 +64,8 @@ User * UserRepository::GetByUsernameAndPassword(char username[20], char password
 		User* current = NULL;
 		while (!in.eof())
 		{
-			char buffer[20];
-			current = new User();
-
-			in.getline(buffer, 20);
-			current->setId(atoi(buffer));
-
-			in.getline(buffer, 20);
-			current->setUsername(buffer);
-
-			in.getline(buffer, 20);
-			current->setPassword(buffer);
-
-			in.getline(buffer, 20);
-			current->setFirstName(buffer);
-
-			in.getline(buffer, 20);
-			current->setLastName(buffer);
-
-			in.getline(buffer, 20);
-			current->setIsAdmin(atoi(buffer));
+			
+			current = readItem(&in);
 
 			if (!in.eof() && strcmp(current->getPassword(), password) == 0 &&
 				strcmp(current->getUsername(), username) == 0)

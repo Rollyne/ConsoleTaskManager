@@ -8,102 +8,46 @@
 
 using namespace std;
 
-TimeReportRepository::TimeReportRepository(char filepath[50])
+
+void TimeReportRepository::writeItem(TimeReport* item, std::ofstream* file)
 {
-	strcpy_s(this->filepath, 50, filepath);
-}
-
-TimeReportRepository::~TimeReportRepository()
-{
-}
-
-int TimeReportRepository::getNextId()
-{
-	int nextId = 0;
-
-	ifstream in(this->filepath);
-
-	if (in.is_open())
+	if (file->is_open())
 	{
-		TimeReport* current = NULL;
-		while (!in.eof())
-		{
-			char buffer[80];
-			current = new TimeReport;
+		if (item->getId() < 0) // If it is less than zero it is undefined
+			item->setId(this->getNextId());
 
-			in.getline(buffer, 20);
-			current->setId(atoi(buffer));
-
-			in.getline(buffer, 20);
-			in.getline(buffer, 20);
-			in.getline(buffer, 20);
-			in.getline(buffer, 20);
-
-			if (current->getId() > nextId)
-			{
-				nextId = current->getId();
-			}
-		}
-		in.close();
-		return nextId + 1;
+		*file << item->getId() << endl
+			<< item->getTaskId() << endl
+			<< item->getReporterId() << endl
+			<< item->getHoursSpent() << endl
+			<< item->getRawTimeOfReport() << endl;
 	}
-
-	return -1;
 }
 
-void TimeReportRepository::Add(TimeReport * report)
+TimeReport* TimeReportRepository::readItem(std::ifstream* file)
 {
-	ofstream out(this->filepath, ios::app);
-
-	if (out.is_open())
-	{
-		out << this->getNextId() << endl
-			<< report->getTaskId() << endl
-			<< report->getReporterId() << endl
-			<< report->getHoursSpent() << endl
-			<< report->getRawTimeOfReport() << endl;
-
-		out.close();
-		return;
-	}
-
-}
-
-TimeReport * TimeReportRepository::GetById(int id)
-{
-	ifstream in(this->filepath);
 	TimeReport* result = NULL;
+	if (file->is_open()) {
+		char buffer[80];
+		TimeReport* current = new TimeReport;
 
-	if (in.is_open())
-	{
-		TimeReport* current = NULL;
-		while (!in.eof())
-		{
-			char buffer[80];
-			current = new TimeReport();
+		file->getline(buffer, 20);
+		current->setId(atoi(buffer));
 
-			in.getline(buffer, 20);
-			current->setId(atoi(buffer));
+		file->getline(buffer, 20);
+		current->setTaskId(atoi(buffer));
 
-			in.getline(buffer, 20);
-			current->setTaskId(atoi(buffer));
+		file->getline(buffer, 20);
+		current->setRepotrterId(atoi(buffer));
 
-			in.getline(buffer, 20);
-			current->setRepotrterId(atoi(buffer));
+		file->getline(buffer, 20);
+		current->setHoursSpent(atoi(buffer));
 
-			in.getline(buffer, 20);
-			current->setHoursSpent(atoi(buffer));
+		file->getline(buffer, 80);
+		if (strlen(buffer) > 0)
+			current->setTimeOfReport(DateTime::CharToTime(buffer));
 
-			in.getline(buffer, 80);
-			if(strlen(buffer) > 0)
-				current->setTimeOfReport(DateTime::CharToTime(buffer));
-
-			if (!in.eof() && current->getId() == id)
-			{
-				result = current;
-				break;
-			}
-		}
+		result = current;
 	}
 	return result;
 }
@@ -115,27 +59,10 @@ LinkedList<TimeReport>* TimeReportRepository::GetAll(int taskId)
 
 	if (in.is_open())
 	{
-		TimeReport* current = NULL;
 		while (!in.eof())
 		{
 			char buffer[80];
-			current = new TimeReport;
-
-			in.getline(buffer, 20);
-			current->setId(atoi(buffer));
-
-			in.getline(buffer, 20);
-			current->setTaskId(atoi(buffer));
-
-			in.getline(buffer, 20);
-			current->setRepotrterId(atoi(buffer));
-
-			in.getline(buffer, 20);
-			current->setHoursSpent(atoi(buffer));
-
-			in.getline(buffer, 80);
-			if (strlen(buffer) > 0)
-				current->setTimeOfReport(DateTime::CharToTime(buffer));
+			TimeReport* current = readItem(&in);
 
 			if (current->getTaskId() == taskId)
 				result->Add(current);
@@ -145,104 +72,3 @@ LinkedList<TimeReport>* TimeReportRepository::GetAll(int taskId)
 	return result;
 }
 
-void TimeReportRepository::Update(TimeReport * report)
-{
-	ofstream newFile("temp.txt", ios::app);
-	ifstream oldFile(this->filepath);
-
-	if (oldFile.is_open() && newFile.is_open())
-	{
-		TimeReport* current = NULL;
-		while (!oldFile.eof())
-		{
-			char buffer[80];
-			current = new TimeReport();
-
-			oldFile.getline(buffer, 20);
-			current->setId(atoi(buffer));
-
-			oldFile.getline(buffer, 20);
-			current->setTaskId(atoi(buffer));
-
-			oldFile.getline(buffer, 20);
-			current->setRepotrterId(atoi(buffer));
-
-			oldFile.getline(buffer, 20);
-			current->setHoursSpent(atoi(buffer));
-
-			oldFile.getline(buffer, 80);
-			if (strlen(buffer) > 0)
-				current->setTimeOfReport(DateTime::CharToTime(buffer));
-
-			if (!oldFile.eof() && current->getId() != report->getId())
-			{
-				newFile << current->getId() << endl
-					<< current->getTaskId() << endl
-					<< current->getReporterId() << endl
-					<< current->getHoursSpent() << endl
-					<< current->getRawTimeOfReport() << endl;
-			}
-			else if (!oldFile.eof() && current->getId() == report->getId())
-			{
-				newFile << report->getId() << endl
-					<< report->getTaskId() << endl
-					<< report->getReporterId() << endl
-					<< report->getHoursSpent() << endl
-					<< report->getRawTimeOfReport() << endl;
-			}
-		}
-		newFile.close();
-		oldFile.close();
-
-		remove(this->filepath);
-		rename("temp.txt", this->filepath);
-		return;
-	}
-}
-
-void TimeReportRepository::Delete(TimeReport * report)
-{
-	ofstream newFile("temp.txt", ios::app);
-	ifstream oldFile(this->filepath);
-
-	if (oldFile.is_open() && newFile.is_open())
-	{
-		TimeReport* current = NULL;
-		while (!oldFile.eof())
-		{
-			char buffer[80];
-			current = new TimeReport();
-
-			oldFile.getline(buffer, 20);
-			current->setId(atoi(buffer));
-
-			oldFile.getline(buffer, 20);
-			current->setTaskId(atoi(buffer));
-
-			oldFile.getline(buffer, 20);
-			current->setRepotrterId(atoi(buffer));
-
-			oldFile.getline(buffer, 20);
-			current->setHoursSpent(atoi(buffer));
-
-			oldFile.getline(buffer, 80);
-			if (strlen(buffer) > 0)
-				current->setTimeOfReport(DateTime::CharToTime(buffer));
-
-			if (!oldFile.eof() && current->getId() != report->getId())
-			{
-				newFile << current->getId() << endl
-					<< current->getTaskId() << endl
-					<< current->getReporterId() << endl
-					<< current->getHoursSpent() << endl
-					<< current->getRawTimeOfReport() << endl;
-			}
-		}
-		newFile.close();
-		oldFile.close();
-
-		remove(this->filepath);
-		rename("temp.txt", this->filepath);
-		return;
-	}
-}

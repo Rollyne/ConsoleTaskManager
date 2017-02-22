@@ -8,6 +8,7 @@
 #include "TaskRepository.h"
 #include "CommentManagementView.h"
 #include "TimeReportManagementView.h"
+#include "UserRepository.h"
 
 
 using namespace std;
@@ -300,7 +301,7 @@ void TaskManagementView::Edit()
 	try
 	{
 		int index = Console::ReadNumber();
-		updated->setId(Console::ReadNumber());
+		updated->setId(index);
 
 		TaskRepository* repo = new TaskRepository("tasks.txt");
 		outdated = repo->GetById(index);

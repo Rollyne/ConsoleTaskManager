@@ -1,22 +1,13 @@
 #pragma once
 #include "Task.h"
-#include "CommentRepository.h"
-class TaskRepository
+#include "UserRepository.h"
+class TaskRepository :public BaseRepository<Task>
 {
-private:
-	int getNextId();
-	char filepath[50];
+protected:
+	void writeItem(Task* item, std::ofstream* file) override;
+	Task* readItem(std::ifstream* file) override;
 public:
-	void Add(Task* task);
-
-	Task* GetById(int id);
 	LinkedList<Task>* GetAll(int parentId);
-	LinkedList<Task>* GetAll();
-
-	void Update(Task* task);
-	void Delete(Task* task);
-
-	TaskRepository(char filepath[50]);
-	~TaskRepository();
+	explicit TaskRepository(char filepath[50]) : BaseRepository<Task>(filepath) {}
 };
 
