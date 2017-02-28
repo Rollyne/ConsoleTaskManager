@@ -66,6 +66,7 @@ char* Console::ReadLine(int length)
 char* Console::ReadLine(int length, int minLength)
 {
 	string input;
+	cin.ignore();
 	getline(cin, input);
 	if (input.length() > length)
 	{

@@ -1,8 +1,5 @@
-﻿  TaskManagementView.cpp
-  Console.cpp
-c:\users\princ\onedrive\documents\visual studio 2015\projects\taskmanager\taskmanager\console.cpp(55): warning C4018: '>': signed/unsigned mismatch
-c:\users\princ\onedrive\documents\visual studio 2015\projects\taskmanager\taskmanager\console.cpp(72): warning C4018: '>': signed/unsigned mismatch
-  Generating Code...
-c:\users\princ\onedrive\documents\visual studio 2015\projects\taskmanager\taskmanager\taskmanagementview.cpp(106): warning C4715: 'TaskManagementView::RenderTaskMenu': not all control paths return a value
+﻿  Console.cpp
+c:\users\princ\onedrive\documents\visual studio 2015\projects\taskmanager\taskmanager\console.cpp(53): warning C4018: '>': signed/unsigned mismatch
+c:\users\princ\onedrive\documents\visual studio 2015\projects\taskmanager\taskmanager\console.cpp(71): warning C4018: '>': signed/unsigned mismatch
   TaskManager.vcxproj -> C:\Users\princ\onedrive\documents\visual studio 2015\Projects\TaskManager\Debug\TaskManager.exe
   TaskManager.vcxproj -> C:\Users\princ\onedrive\documents\visual studio 2015\Projects\TaskManager\Debug\TaskManager.pdb (Full PDB)

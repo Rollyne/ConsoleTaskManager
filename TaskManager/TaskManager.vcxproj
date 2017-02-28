@@ -148,6 +148,7 @@
     <ClInclude Include="AdministrationView.h" />
     <ClInclude Include="AuthenticationService.h" />
     <ClInclude Include="BaseRepository.h" />
+    <ClInclude Include="BaseView.h" />
     <ClInclude Include="Comment.h" />
     <ClInclude Include="CommentRepository.h" />
     <ClInclude Include="Console.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="AdministrationView.cpp" />
     <ClCompile Include="AuthenticationService.cpp" />
     <ClCompile Include="BaseRepository.cpp" />
+    <ClCompile Include="BaseView.cpp" />
     <ClCompile Include="Comment.cpp" />
     <ClCompile Include="CommentManagementView.cpp" />
     <ClCompile Include="CommentRepository.cpp" />

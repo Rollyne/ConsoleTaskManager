@@ -63,9 +63,6 @@
     <ClInclude Include="LinkedList.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="UserManagementView.h">
-      <Filter>Header Files\Views</Filter>
-    </ClInclude>
     <ClInclude Include="MenuItems.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
@@ -110,6 +107,12 @@
     </ClInclude>
     <ClInclude Include="TimeReport.h">
       <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseView.h">
+      <Filter>Header Files\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManagementView.h">
+      <Filter>Header Files\Views</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +177,9 @@
       <Filter>Source Files\Views</Filter>
     </ClCompile>
     <ClCompile Include="TimeReportManagementView.cpp">
+      <Filter>Source Files\Views</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseView.cpp">
       <Filter>Source Files\Views</Filter>
     </ClCompile>
   </ItemGroup>

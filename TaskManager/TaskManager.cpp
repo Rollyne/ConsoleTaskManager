@@ -7,6 +7,7 @@
 #include <iostream>
 #include "TaskManagementView.h"
 #include "AdministrationView.h"
+#include "UserManagementView.h"
 
 using namespace std;
 
@@ -18,15 +19,20 @@ int main()
 
 		char* username;
 		char* password;
-		cout << "## Login ##" << endl;
+		
 		try 
 		{
-			cout << "Username: ";
-			username = Console::ReadLine(20);
+			while (AuthenticationService::getLoggedUser() == NULL) 
+			{
+				system("cls");
+				cout << "## Login ##" << endl
+					<< "Username: ";
+				username = Console::ReadLine(20);
 
-			cout << "Password: ";
-			password = Console::ReadLine(20);
-			AuthenticationService::Authenticate(username, password);
+				cout << "Password: ";
+				password = Console::ReadLine(20);
+				AuthenticationService::Authenticate(username, password);
+			}
 		}
 		catch(invalid_argument e)
 		{
