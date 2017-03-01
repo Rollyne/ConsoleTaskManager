@@ -66,7 +66,6 @@ char* Console::ReadLine(int length)
 char* Console::ReadLine(int length, int minLength)
 {
 	string input;
-	cin.ignore();
 	getline(cin, input);
 	if (input.length() > length)
 	{
@@ -93,6 +92,9 @@ int Console::ReadNumber()
 		getline(cin, ignoreLine); //removing the input from the cin
 		throw invalid_argument("The input is not a number.");
 	}
+	cin.clear();
+	string ignoreLine;
+	getline(cin, ignoreLine); //removing the input from the cin beacause it has leftover empty string
 	return input;
 }
 

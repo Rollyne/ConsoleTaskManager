@@ -22,271 +22,101 @@ TimeReportManagementView::~TimeReportManagementView()
 {
 }
 
-CRUDMenuItems TimeReportManagementView::RenderMenu()
+CRUDMenuItems TimeReportManagementView::RenderMenu() // The same as CommentView's function. How to inherit it ?
 {
 	system("cls");
 
 	TaskRepository* repo = new TaskRepository("tasks.txt");
-	TaskManagementView::RenderTask(repo->GetById(this->taskId), AuthenticationService::getLoggedUser()->getId());
+	TaskManagementView view;
+	view.printItem(repo->GetById(this->taskId));
 	delete repo;
 
-	cout << endl << "## Time Reports Management ##" << endl
-		<< "[A]dd" << endl
-		<< "[L]ist" << endl
-		<< "[E]dit" << endl
-		<< "[D]elete" << endl
-		<< "E[x]it" << endl
-		<< "> ";
-	char* buffer;
-	try
-	{
-		buffer = Console::ReadLineMin(1);
-	}
-	catch (invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return CRUDMenuItems::Fail;
-	}
-	
-
-	switch (toupper(buffer[0]))
-	{
-	case 'A':
-		return CRUDMenuItems::Add;
-	case 'L':
-		return CRUDMenuItems::List;
-	case 'E':
-		return CRUDMenuItems::Edit;
-	case 'D':
-		return CRUDMenuItems::Delete;
-	case 'X':
-		return CRUDMenuItems::Exit;
-	default:
-		return CRUDMenuItems::Invalid;
-	}
+	return BaseView<TimeReport>::RenderMenu();
 }
 
-
-void TimeReportManagementView::Add()
+void TimeReportManagementView::printItem(TimeReport* item)
 {
-	system("cls");
+	UserRepository* userRepo = new UserRepository("users.txt");
+	User* reporter = userRepo->GetById(item->getReporterId());
 
+
+	cout << "Index: " << item->getId() << endl
+		<< "Reporter: " << reporter->getFirstName() << " " << reporter->getLastName()
+		<< "(" << reporter->getId() << ") "
+		<< (reporter->getId() == AuthenticationService::getLoggedUser()->getId() ? "|You|" : "") << endl
+		<< "Time reported: ";
+	if (item->getHoursSpent() == 1)
+		cout << "1 hour" << endl;
+	else
+		cout << item->getHoursSpent() << " hours" << endl;
+	cout << "Date of report: " << item->getTimeOfReport() << endl;
+
+	delete reporter;
+	delete userRepo;
+}
+
+bool TimeReportManagementView::hasAccess(TimeReport* item)
+{
+	if (item->getReporterId() == AuthenticationService::getLoggedUser()->getId())
+		return true;
+	return false;
+}
+bool TimeReportManagementView::doesBelong(TimeReport* item)
+{
+	if (item->getTaskId() == taskId)
+		return true;
+	return false;
+}
+
+TimeReport* TimeReportManagementView::inputItem()
+{
 	TimeReport* newReport = new TimeReport;
 
 	cout << "## Report time spent on task id: " << this->taskId << " ##" << endl
 		<< "Time in hours: ";
-	
-	try
-	{
-		newReport->setHoursSpent(Console::ReadNumber());
-	}
-	catch (invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return;
-	}
+
+	newReport->setHoursSpent(Console::ReadNumber());
+
 	newReport->setTaskId(this->taskId);
 	newReport->setRepotrterId(AuthenticationService::getLoggedUser()->getId());
 	newReport->setTimeOfReport(time(0));
 
+	return newReport;
+}
+
+void TimeReportManagementView::updateItem(TimeReport* item)
+{
+	cout << "Time spent |" << item->getHoursSpent() << "| : ";
+
+	item->setHoursSpent(Console::ReadNumber());
+
+	item->setTimeOfReport(time(0));
+}
+
+void TimeReportManagementView::Add()
+{
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
-
-	repo->Add(newReport);
-
-
+	_add(repo);
 	delete repo;
-	delete newReport;
-
-	system("pause");
 }
 
 void TimeReportManagementView::List()
 {
-	system("cls");
-
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
-	UserRepository* userRepo = new UserRepository("users.txt");
-	LinkedList<TimeReport>* allReports = repo->GetAll(this->taskId);
-
-	int commentsCount = allReports->Count();
-
-	cout << "## All reports on this task ##" << endl << endl;
-	for (int i = 0; i < commentsCount; i++)
-	{
-		TimeReport* current = allReports->getItemAt(i);
-		User* reporter = userRepo->GetById(current->getReporterId());
-
-		cout << "# # # # # # # # # # #" << endl
-			<< "Index: " << current->getId() << endl
-			<< "Reporter: " << reporter->getFirstName() << " " << reporter->getLastName()
-			<< "(" << reporter->getId() << ") "
-			<< (reporter->getId() == AuthenticationService::getLoggedUser()->getId() ? "|You|" : "") << endl
-			<< "Time reported: ";
-		if (current->getHoursSpent() == 1)
-			cout << "1 hour" << endl;
-		else
-			cout << current->getHoursSpent() << " hours" << endl;
-		cout << "Date of report: " << current->getTimeOfReport() << endl;
-	}
-
+	_list(repo);
 	delete repo;
-	delete userRepo;
-	delete allReports;
-
-	system("pause");
 }
 
 void TimeReportManagementView::Edit()
 {
-	system("cls");
-
-	TimeReport* updated = new TimeReport();
-	TimeReport* outdated = new TimeReport();
-	
-
-	cout << "## Update report ##" << endl
-		<< "Index of the report: ";
-	int buffer;
-	try
-	{
-		buffer = Console::ReadNumber();
-	}
-	catch(invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return;
-	}
-	
-	updated->setId(buffer);
-
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
-
-
-	outdated = repo->GetById(buffer);
-	if (outdated != NULL)
-	{
-		if (outdated->getTaskId() == this->taskId)
-		{
-			if (outdated->getReporterId() == AuthenticationService::getLoggedUser()->getId())
-			{
-				
-				cout << "Time spent |" << outdated->getHoursSpent() << "| : ";
-				try
-				{
-					buffer = Console::ReadNumber();
-				}
-				catch (invalid_argument e)
-				{
-					cout << e.what() << endl;
-					system("pause");
-					return;
-				}
-
-				updated->setHoursSpent(buffer);
-
-				updated->setTaskId(outdated->getTaskId());
-				updated->setRepotrterId(outdated->getReporterId());
-				updated->setTimeOfReport(time(0));
-
-				repo->Update(updated);
-			}
-			else
-			{
-				cout << "You cannot edit this report." << endl;
-			}
-		}
-		else
-		{
-			cout << "This report doesn't belong to this task." << endl;
-		}
-	}
-	else
-	{
-		cout << "This report doesn't exist." << endl;
-	}
-
+	_edit(repo);
 	delete repo;
-	delete updated;
-	delete outdated;
-
-	system("pause");
 }
 
 void TimeReportManagementView::Delete()
 {
-	system("cls");
-
 	TimeReportRepository* repo = new TimeReportRepository("timereports.txt");
-	cout << "## Delete report ##" << endl
-		<< "Index of the comment: ";
-	int buffer;
-	try
-	{
-		buffer = Console::ReadNumber();
-	}
-	catch (invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return;
-	}
-
-	TimeReport* removed = repo->GetById(buffer);
-	if (removed != NULL)
-	{
-		if (removed->getTaskId() == this->taskId)
-		{
-			if (removed->getReporterId() == AuthenticationService::getLoggedUser()->getId())
-			{
-				repo->Delete(removed);
-
-				cout << "Report removed." << endl;
-			}
-			else
-				cout << "You cannot delete this report." << endl;
-		}
-		else
-			cout << "This report doesn't belong to this task." << endl;
-	}
-	else
-	{
-		cout << "This report doesn't exist" << endl;
-	}
-
+	_delete(repo);
 	delete repo;
-	delete removed;
-
-	system("pause");
-}
-
-void TimeReportManagementView::Run()
-{
-	while (true)
-	{
-		CRUDMenuItems choice = RenderMenu();
-		switch (choice)
-		{
-		case CRUDMenuItems::Add:
-			Add();
-			break;
-		case CRUDMenuItems::List:
-			List();
-			break;
-		case CRUDMenuItems::Edit:
-			Edit();
-			break;
-		case CRUDMenuItems::Delete:
-			Delete();
-			break;
-		case CRUDMenuItems::Exit:
-			return;
-		case CRUDMenuItems::Invalid:
-			cout << "Invalid choice" << endl;
-			system("pause");
-			break;
-		}
-	}
 }

@@ -1,12 +1,12 @@
 #pragma once
 #include "User.h"
-#include "BaseView.cpp"
+#include "BaseView.cpp" //How to include this everywhere without getting errors ?
 
 class UserManagementView :public BaseView<User>
 {
 protected:
 	User* inputItem() override;
-	User* updateItem(User* outdated) override;
+	void updateItem(User* item) override;
 	void printItem(User* item) override;
 
 	void Add() override;

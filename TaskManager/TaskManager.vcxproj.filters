@@ -114,6 +114,9 @@
     <ClInclude Include="UserManagementView.h">
       <Filter>Header Files\Views</Filter>
     </ClInclude>
+    <ClInclude Include="CommentManagementView.h">
+      <Filter>Header Files\Views</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

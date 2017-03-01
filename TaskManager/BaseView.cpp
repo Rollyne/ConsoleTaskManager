@@ -22,6 +22,12 @@ bool BaseView<T>::hasAccess(T* item)
 {
 	return true;
 }
+template <class T>
+bool BaseView<T>::doesBelong(T* item)
+{
+	return true;
+}
+
 
 
 
@@ -73,16 +79,10 @@ void BaseView<T>::_add(BaseRepository<T>* repo)
 {
 	system("cls");
 
-	T* newItem = new T;
-
 	cout << "## Create a new item ##" << endl;
 	try
 	{
-
-		newItem = inputItem();
-
-		repo->Add(newItem);
-
+		repo->Add(inputItem());
 	}
 	catch (invalid_argument e)
 	{
@@ -90,8 +90,6 @@ void BaseView<T>::_add(BaseRepository<T>* repo)
 		system("pause");
 		return;
 	}
-
-	delete newItem;
 
 	system("pause");
 }
@@ -108,9 +106,12 @@ void BaseView<T>::_list(BaseRepository<T>* repo)
 	cout << "## All items ##" << endl << endl;
 	for (int i = 0; i < itemsCount; i++)
 	{
-		T* current = allItems->getItemAt(i);
-
-		printItem(current);
+		T* item = allItems->getItemAt(i);
+		if (doesBelong(item))
+		{
+			cout << "# # # # # # # # # # #" << endl;
+			printItem(item);
+		}
 	}
 
 	delete allItems;
@@ -129,13 +130,15 @@ void BaseView<T>::_edit(BaseRepository<T>* repo)
 	{
 		int index = Console::ReadNumber();
 
-		auto outdated = repo->GetById(index);
-		if (outdated != NULL)
+		auto item = repo->GetById(index);
+		if (item != NULL)
 		{
-			if (hasAccess(outdated))
+			if (hasAccess(item))
 			{
-				
-				repo->Update(updateItem(outdated));
+				updateItem(item);
+				repo->Update(item);
+
+				delete item;
 			}
 			else
 				cout << "You cannot edit this item." << endl;
@@ -144,8 +147,6 @@ void BaseView<T>::_edit(BaseRepository<T>* repo)
 		{
 			cout << "This item doesn't exist." << endl;
 		}
-
-		delete outdated;
 	}
 	catch (invalid_argument e)
 	{
@@ -227,7 +228,6 @@ template <class T>
 BaseView<T>::BaseView()
 {
 }
-
 
 template<class T>
 BaseView<T>::~BaseView()

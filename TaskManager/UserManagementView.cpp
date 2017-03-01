@@ -49,47 +49,41 @@ User* UserManagementView::inputItem()
 void UserManagementView::printItem(User* item)
 {
 	cout.setf(ios::boolalpha);
-	cout << "# # # # # # # # # # #" << endl
-		<< "Index: " << item->getId() << endl
+
+	cout << "Index: " << item->getId() << endl
 		<< "Username: " << item->getUsername() << endl
 		<< "First name: " << item->getFirstName() << endl
 		<< "Last name: " << item->getLastName() << endl
 		<< "Is admin: " << item->getIsAdmin() << endl;
 }
 
-User* UserManagementView::updateItem(User* outdated)
+void UserManagementView::updateItem(User* item)
 {
 	char* buffer;
-	User* updated = new User;
-	
-	updated->setId(outdated->getId());
 
-	cout << "Username |" << outdated->getUsername() << "| : ";
-	//cin.ignore(INT_MAX, '\n');
+	cout << "Username |" << item->getUsername() << "| : ";
 	buffer = Console::ReadLine(20, textFieldMinLength);
-	updated->setUsername(buffer);
+	item->setUsername(buffer);
 
-	cout << "Password |" << outdated->getPassword() << "| : ";
+	cout << "Password |" << item->getPassword() << "| : ";
 	buffer = Console::ReadLine(20, textFieldMinLength);
-	updated->setPassword(buffer);
+	item->setPassword(buffer);
 
-	cout << "First name |" << outdated->getFirstName() << "| : ";
+	cout << "First name |" << item->getFirstName() << "| : ";
 	buffer = Console::ReadLine(20, textFieldMinLength);
-	updated->setFirstName(buffer);
+	item->setFirstName(buffer);
 
-	cout << "Last name |" << outdated->getLastName() << "| : ";
+	cout << "Last name |" << item->getLastName() << "| : ";
 	buffer = Console::ReadLine(20, textFieldMinLength);
-	updated->setLastName(buffer);
+	item->setLastName(buffer);
 
 	cout.setf(ios::boolalpha);
-	cout << "Is admin |" << outdated->getIsAdmin() << "| (Y/N): ";
+	cout << "Is admin |" << item->getIsAdmin() << "| (Y/N): ";
 	buffer = Console::ReadLineMin(1);
 	if (toupper(buffer[0]) == 'Y')
-		updated->setIsAdmin(true);
+		item->setIsAdmin(true);
 	else
-		updated->setIsAdmin(false);
-
-	return updated;
+		item->setIsAdmin(false);
 }
 
 
@@ -99,7 +93,6 @@ void UserManagementView::Add()
 	_add(repo);
 	delete repo;
 }
-
 void UserManagementView::List()
 {
 	auto* repo = new UserRepository("users.txt");

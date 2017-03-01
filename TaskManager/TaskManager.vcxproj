@@ -150,6 +150,7 @@
     <ClInclude Include="BaseRepository.h" />
     <ClInclude Include="BaseView.h" />
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="CommentManagementView.h" />
     <ClInclude Include="CommentRepository.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="DateTime.h" />

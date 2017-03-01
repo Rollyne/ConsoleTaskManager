@@ -1,22 +1,28 @@
 #pragma once
 #include "MenuItems.h"
-class CommentManagementView
-{
-private:
-	const int nameMinLength = 3;
+#include "UserManagementView.h"
+#include "Comment.h"
 
+class CommentManagementView : public BaseView<Comment>
+{
+protected:
 	int taskId;
 
-	void List();
-	void Edit();
-	void Delete();
+	Comment* inputItem() override;
+	void updateItem(Comment* item) override;
+	void printItem(Comment* item) override;
 
-	CRUDMenuItems RenderMenu();
+	bool hasAccess(Comment* item) override;
+	bool doesBelong(Comment* item) override;
+
+	void List() override;
+	void Edit() override;
+	void Delete() override;
+
+	CRUDMenuItems RenderMenu() override;
 public:
-	void Add();
-	CommentManagementView(int taskId);
+	void Add() override;
+	explicit CommentManagementView(int taskId);
 	~CommentManagementView();
-
-	void Run();
 };
 

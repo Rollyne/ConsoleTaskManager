@@ -70,11 +70,116 @@ CRUDMenuItems TaskManagementView::RenderMenu()
 	}
 }
 
+void TaskManagementView::printItem(Task* task)
+{
+
+	UserRepository* userRepo = new UserRepository("users.txt");
+
+	User* executitive = userRepo->GetById(task->getExecutitiveId());
+	User* creator = userRepo->GetById(task->getCreatorId());
+
+	cout.setf(ios::boolalpha);
+	cout << "Index: " << task->getId() << endl
+		<< "Header: " << task->getHeader() << endl
+		<< "Description: " << task->getDescription() << endl
+		<< "Measurment: ";
+	if (task->getMeasurement() == 1)
+		cout << "1 hour" << endl;
+	else
+		cout << task->getMeasurement() << " hours" << endl;
+
+	cout << "Executitive: " << executitive->getFirstName() << " " << executitive->getLastName()
+		<< "(" << executitive->getId() << ") "
+		<< (executitive->getId() == AuthenticationService::getLoggedUser()->getId() ? "|You|" : "") << endl;
+
+	cout << "Creator: " << creator->getFirstName() << " " << creator->getLastName()
+		<< "(" << creator->getId() << ") "
+		<< (creator->getId() == AuthenticationService::getLoggedUser()->getId() ? "|You|" : "") << endl;
+
+	cout << "Created on: " << task->getTimeOfCreation() << endl
+		<< "Last edited on: " << task->getTimeOfLastUpdate() << endl
+		<< "Status: " << (task->getStatus() ? "Done" : "In process") << endl;
+
+	delete userRepo;
+	delete executitive;
+	delete creator;
+}
+
+bool TaskManagementView::hasAccess(Task* item)
+{
+	if (AuthenticationService::getLoggedUser()->getId() == item->getCreatorId())
+		return true;
+	return false;
+
+}
+
+Task* TaskManagementView::inputItem()
+{
+	system("cls");
+
+	Task* newTask = new Task;
+	char* buffer;
+
+	buffer = Console::ReadLine(50, textFieldMinLength);
+	newTask->setHeader(buffer);
+
+	cout << "Descirption: ";
+	buffer = Console::ReadLine(200, textFieldMinLength);
+	newTask->setDescription(buffer);
+
+	cout << "Measurement(How many hours?): ";
+	newTask->setMeasurement(Console::ReadNumber());
+
+	cout << "Executitive's index(Who is going to do it?): ";
+	newTask->setExecutitiveId(Console::ReadNumber());
+
+	UserRepository* repo = new UserRepository("users.txt");
+	if (repo->GetById(newTask->getExecutitiveId()) == NULL)
+	{
+		cout << "This user doesn't exist." << endl;
+		system("pause");
+		return NULL;
+	}
+
+	newTask->setCreatorId(AuthenticationService::getLoggedUser()->getId());
+	newTask->setTimeOfCreation(time(0));
+	newTask->setTimeOfLastUpdate(time(0));
+	newTask->setStatus(false);
+
+	return newTask;
+}
+
+void TaskManagementView::updateItem(Task* item)
+{
+	char* buffer;
+
+	cout << "* Header *" << endl
+		<< item->getHeader() << endl
+		<< "> ";
+	buffer = Console::ReadLine(50, textFieldMinLength);
+	item->setHeader(buffer);
+
+	cout << "* Description *" << endl
+		<< item->getDescription() << endl
+		<< "> ";
+	buffer = Console::ReadLine(200, textFieldMinLength);
+	item->setDescription(buffer);
+
+	cout << "Measurment |" << item->getMeasurement() << "| : ";
+	item->setMeasurement(Console::ReadNumber());
+
+	cout << "Executitive's index |" << item->getExecutitiveId() << "| : ";
+	item->setExecutitiveId(Console::ReadNumber());
+
+	item->setTimeOfLastUpdate(time(0));
+}
+
+
 TaskManagementMenuItems TaskManagementView::RenderTaskMenu(Task* task)
 {
 	system("cls");
 
-	TaskManagementView::RenderTask(task, AuthenticationService::getLoggedUser()->getId());
+	printItem(task);
 	cout <<endl<< "## Task Properties ##" << endl
 		<< "[C]omments" << endl
 		<< "[T]ime Report" << endl
@@ -105,119 +210,20 @@ TaskManagementMenuItems TaskManagementView::RenderTaskMenu(Task* task)
 	}
 }
 
-void TaskManagementView::RenderTask(Task* task, int loggedUserId)
-{
-
-	UserRepository* userRepo = new UserRepository("users.txt");
-
-	User* executitive = userRepo->GetById(task->getExecutitiveId());
-	User* creator = userRepo->GetById(task->getCreatorId());
-
-	cout.setf(ios::boolalpha);
-	cout << "Index: " << task->getId() << endl
-		<< "Header: " << task->getHeader() << endl
-		<< "Description: " << task->getDescription() << endl
-		<< "Measurment: ";
-	if (task->getMeasurement() == 1)
-		cout << "1 hour" << endl;
-	else
-		cout << task->getMeasurement() << " hours" << endl;
-
-	cout << "Executitive: " << executitive->getFirstName() << " " << executitive->getLastName()
-		<< "(" << executitive->getId() << ") "
-		<< (executitive->getId() == loggedUserId ? "|You|" : "") << endl;
-
-	cout << "Creator: " << creator->getFirstName() << " " << creator->getLastName()
-		<< "(" << creator->getId() << ") "
-		<< (creator->getId() == loggedUserId ? "|You|" : "") << endl;
-
-	cout << "Created on: " << task->getTimeOfCreation() << endl
-		<< "Last edited on: " << task->getTimeOfLastUpdate() << endl
-		<< "Status: " << (task->getStatus() ? "Done" : "In process") << endl;
-
-	delete userRepo;
-	delete executitive;
-	delete creator;
-}
-
 
 void TaskManagementView::Add()
 {
-	system("cls");
-
-	Task* newTask = new Task;
-	char* buffer;
-
-	cout << "## Create a task ##" << endl
-		<< "Header: ";
-	try
-	{
-		buffer = Console::ReadLine(50, nameMinLength);
-		newTask->setHeader(buffer);
-
-		cout << "Descirption: ";
-		buffer = Console::ReadLine(200, nameMinLength);
-		newTask->setDescription(buffer);
-
-		cout << "Measurement(How many hours?): ";
-		newTask->setMeasurement(Console::ReadNumber());
-
-		cout << "Executitive's index(Who is going to do it?): ";
-		newTask->setExecutitiveId(Console::ReadNumber());
-		
-		UserRepository* repo = new UserRepository("users.txt");
-		if(repo->GetById(newTask->getExecutitiveId()) == NULL)
-		{
-			cout << "This user doesn't exist." << endl;
-			system("pause");
-			return;
-		}
-	}
-	catch(invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return;
-	}
-	
-	newTask->setCreatorId(AuthenticationService::getLoggedUser()->getId());
-	newTask->setTimeOfCreation(time(0));
-	newTask->setTimeOfLastUpdate(time(0));
-	newTask->setStatus(false);
-
-	TaskRepository* repo = new TaskRepository("tasks.txt");
-
-	repo->Add(newTask);
-
-
+	auto* repo = new TaskRepository("tasks.txt");
+	_add(repo);
 	delete repo;
-	delete newTask;
-
-	system("pause");
 }
+
 
 void TaskManagementView::List()
 {
-	system("cls");
-
-	TaskRepository* repo = new TaskRepository("tasks.txt");
-	UserRepository* userRepo = new UserRepository("users.txt");
-	LinkedList<Task>* allTasks = repo->GetAll(AuthenticationService::getLoggedUser()->getId());
-
-	int usersCount = allTasks->Count();
-
-	cout << "## All tasks that include you ##" << endl << endl;
-	for (int i = 0; i < usersCount; i++)
-	{
-		cout << "# # # # # # # # # # # #" << endl;
-		TaskManagementView::RenderTask(allTasks->getItemAt(i), AuthenticationService::getLoggedUser()->getId());
-	}
-
-	delete userRepo;
+	auto* repo = new TaskRepository("tasks.txt");
+	_list(repo);
 	delete repo;
-	delete allTasks;
-
-	system("pause");
 }
 
 void TaskManagementView::View()
@@ -241,8 +247,7 @@ void TaskManagementView::View()
 	Task* target = repo->GetById(index);
 	if (target != NULL)
 	{
-		if (target->getCreatorId() == AuthenticationService::getLoggedUser()->getId()
-			|| target->getExecutitiveId() == AuthenticationService::getLoggedUser()->getId())
+		if (hasAccess(target) || target->getExecutitiveId() == AuthenticationService::getLoggedUser()->getId())
 		{
 			while (true)
 			{
@@ -253,12 +258,14 @@ void TaskManagementView::View()
 				{
 					CommentManagementView* commView = new CommentManagementView(target->getId());
 					commView->Run();
+					delete commView;
 					break;
 				}
 				case TaskManagementMenuItems::TimeReportManagement:
 				{
 					TimeReportManagementView* repView = new TimeReportManagementView(target->getId());
 					repView->Run();
+					delete repView;
 					break;
 				}
 				case TaskManagementMenuItems::TaskManagementExit:
@@ -290,113 +297,16 @@ void TaskManagementView::View()
 
 void TaskManagementView::Edit()
 {
-	system("cls");
-
-	Task* updated = new Task;
-	Task* outdated = new Task;
-	char buffer[200];
-
-	cout << "## Update task ##" << endl
-		<< "Index of the task: ";
-	try
-	{
-		int index = Console::ReadNumber();
-		updated->setId(index);
-
-		TaskRepository* repo = new TaskRepository("tasks.txt");
-		outdated = repo->GetById(index);
-		if (outdated != NULL)
-		{
-			if (AuthenticationService::getLoggedUser()->getId() == outdated->getCreatorId()) {
-				cout << "* Header *" << endl
-					<< outdated->getHeader() << endl
-					<< "> ";
-				Console::ReadLine(50, nameMinLength);
-				updated->setHeader(buffer);
-
-				cout << "* Description *" << endl
-					<< outdated->getDescription() << endl
-					<< "> ";
-				Console::ReadLine(200, nameMinLength);
-				updated->setDescription(buffer);
-
-				cout << "Measurment |" << outdated->getMeasurement() << "| : ";
-				updated->setMeasurement(Console::ReadNumber());
-
-				cout << "Executitive's index |" << outdated->getExecutitiveId() << "| : ";
-				updated->setExecutitiveId(Console::ReadNumber());
-
-				updated->setCreatorId(outdated->getCreatorId());
-				updated->setTimeOfCreation(outdated->getRawTimeOfCreation());
-				updated->setTimeOfLastUpdate(time(0));
-				updated->setStatus(outdated->getStatus());
-
-				repo->Update(updated);
-			}
-			else
-			{
-				cout << "You cannot edit this task." << endl;
-			}
-		}
-		else
-		{
-			cout << "This task doesn't exist." << endl;
-		}
-		delete repo;
-	}
-	catch(invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return;
-	}
-	
-
-	delete updated;
-	delete outdated;
-
-	system("pause");
+	auto* repo = new TaskRepository("tasks.txt");
+	_edit(repo);
+	delete repo;
 }
 
 void TaskManagementView::Delete()
 {
-	system("cls");
-
-	TaskRepository* repo = new TaskRepository("tasks.txt");
-	cout << "## Delete task ##" << endl
-		<< "Index of the task: ";
-	Task* removed;
-	try
-	{
-		removed = repo->GetById(Console::ReadNumber());
-	}
-	catch(invalid_argument e)
-	{
-		cout << e.what() << endl;
-		system("pause");
-		return;
-	}
-	if (removed != NULL) 
-	{
-		if (AuthenticationService::getLoggedUser()->getId() == removed->getCreatorId())
-		{
-			repo->Delete(removed);
-			cout << "Task removed." << endl;
-		}
-		else
-		{
-			cout << "You cannot delete this task." << endl;
-		}
-	}
-	else
-	{
-		cout << "This task doesn't exist" << endl;
-	}
-	
+	auto* repo = new TaskRepository("tasks.txt");
+	_delete(repo);
 	delete repo;
-	delete removed;
-
-	system("pause");
 }
 
 void TaskManagementView::UpdateStatus()

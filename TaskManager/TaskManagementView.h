@@ -1,25 +1,32 @@
 #pragma once
 #include "MenuItems.h"
 #include "Task.h"
-class TaskManagementView
-{
-private:
-	const int nameMinLength = 3;
+#include "UserManagementView.h"
 
-	void Add();
-	void List();
+class TaskManagementView : public BaseView<Task>
+{
+protected:
+
+	Task* inputItem() override;
+	void updateItem(Task* outdated) override;
+	
+
+	bool hasAccess(Task* item) override;
+
+	void Add() override;
+	void List() override;
 	void View();
-	void Edit();
-	void Delete();
+	void Edit() override;
+	void Delete() override;
 	void UpdateStatus();
 
-	CRUDMenuItems RenderMenu();
+	CRUDMenuItems RenderMenu() override;
 	TaskManagementMenuItems RenderTaskMenu(Task* task);
 public:
 	TaskManagementView();
 	~TaskManagementView();
 
+	void printItem(Task* item) override;
 	void Run();
-	static void RenderTask(Task* task, int loggedUserId);
 };
 

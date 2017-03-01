@@ -1,22 +1,28 @@
 #pragma once
 #include "MenuItems.h"
-class TimeReportManagementView
-{
-private:
-	const int nameMinLength = 3;
+#include "TimeReport.h"
+#include "UserManagementView.h"
 
+class TimeReportManagementView :public BaseView<TimeReport>
+{
+protected:
 	int taskId;
 
-	void Add();
-	void List();
-	void Edit();
-	void Delete();
+	TimeReport* inputItem() override;
+	void updateItem(TimeReport* item) override;
+	void printItem(TimeReport* item) override;
 
-	CRUDMenuItems RenderMenu();
+	bool hasAccess(TimeReport* item) override;
+	bool doesBelong(TimeReport* item) override;
+
+	void Add() override;
+	void List() override;
+	void Edit() override;
+	void Delete() override;
+
+	CRUDMenuItems RenderMenu() override;
 public:
-	TimeReportManagementView(int taskId);
+	explicit TimeReportManagementView(int taskId);
 	~TimeReportManagementView();
-
-	void Run();
 };
 
